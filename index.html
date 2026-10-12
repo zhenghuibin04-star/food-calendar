@@ -538,7 +538,7 @@
     // Supabase configuration
     const SUPABASE_URL = 'https://jqpnfdzndxlvormpmkaz.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_j_0CV7hQadmqnc24pr94Zw_wqA3MGrf';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const EMOJIS = ['😋', '', '😍', '🥰', '😢', '🤔', '🍜', '🍕', '🍣', '🍰', '🥗', '🍔', '🌮', '🍱', '🍲', '🥟', '', '🍝'];
     const NICKNAME_KEY = 'food-calendar-nickname';
@@ -580,7 +580,7 @@
 
     async function loadData() {
       try {
-        const { data, error } = await supabase.from('meals').select('*');
+        const { data, error } = await client.from('meals').select('*');
         if (error) throw error;
         meals = {};
         data.forEach(row => {
@@ -599,7 +599,7 @@
 
     async function saveMeal(dateStr, mealData) {
       try {
-        const { error } = await supabase.from('meals').upsert({
+        const { error } = await client.from('meals').upsert({
           date: dateStr,
           dish: mealData.dish,
           emoji: mealData.emoji,
@@ -616,7 +616,7 @@
 
     async function deleteMeal(dateStr) {
       try {
-        const { error } = await supabase.from('meals').delete().eq('date', dateStr);
+        const { error } = await client.from('meals').delete().eq('date', dateStr);
         if (error) throw error;
         delete meals[dateStr];
         renderCalendar();
@@ -756,7 +756,7 @@
     }
 
     // Real-time subscription
-    supabase.channel('meals-channel')
+    client.channel('meals-channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'meals' }, (payload) => {
         console.log('Real-time update:', payload);
         loadData();
