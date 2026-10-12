@@ -591,10 +591,10 @@
             updatedAt: new Date(row.updated_at).getTime()
           };
         });
-        renderCalendar();
       } catch (e) {
         console.error('Failed to load meals:', e);
       }
+      renderCalendar();
     }
 
     async function saveMeal(dateStr, mealData) {
