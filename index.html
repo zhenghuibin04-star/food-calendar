@@ -7,10 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js"></script>
   <style>
     /* Token system */
     :root {
-      /* Color tokens - warm honey theme */
       --bg: #FFF6E3;
       --surface: #FFFBEF;
       --primary: #FFB93D;
@@ -20,18 +20,12 @@
       --accent: #E8593C;
       --border: #F2DFB6;
       --shadow: rgba(107, 74, 43, 0.08);
-
-      /* Font tokens */
       --font-display: 'ZCOOL KuaiLe', system-ui, sans-serif;
       --font-body: 'Noto Sans SC', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-
-      /* Spacing */
       --side-padding: clamp(16px, 4vw, 32px);
-
       color-scheme: light;
     }
 
-    /* Dark theme - system preference */
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
         --bg: #2A2118;
@@ -47,7 +41,6 @@
       }
     }
 
-    /* Dark theme - explicit toggle */
     :root[data-theme="dark"] {
       --bg: #2A2118;
       --surface: #37291B;
@@ -61,11 +54,7 @@
       color-scheme: dark;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background: var(--bg);
@@ -85,7 +74,6 @@
       padding-block: 24px;
     }
 
-    /* Header */
     .header {
       display: flex;
       align-items: center;
@@ -137,11 +125,8 @@
       box-shadow: 0 4px 12px var(--shadow);
     }
 
-    .nickname-icon {
-      font-size: 18px;
-    }
+    .nickname-icon { font-size: 18px; }
 
-    /* Month navigation */
     .month-nav {
       display: flex;
       align-items: center;
@@ -179,7 +164,6 @@
       text-align: center;
     }
 
-    /* Calendar grid */
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -188,15 +172,11 @@
     }
 
     @media (max-width: 768px) {
-      .calendar-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
+      .calendar-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
     @media (max-width: 480px) {
-      .calendar-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
+      .calendar-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
     .weekday-label {
@@ -246,9 +226,7 @@
       color: var(--ink);
     }
 
-    .today .day-number {
-      color: var(--bg);
-    }
+    .today .day-number { color: var(--bg); }
 
     .meal-info {
       flex: 1;
@@ -270,9 +248,7 @@
       line-height: 1.3;
     }
 
-    .today .meal-dish {
-      color: var(--bg);
-    }
+    .today .meal-dish { color: var(--bg); }
 
     .meal-meta {
       display: flex;
@@ -282,19 +258,11 @@
       color: var(--muted);
     }
 
-    .today .meal-meta {
-      color: rgba(255, 255, 255, 0.8);
-    }
+    .today .meal-meta { color: rgba(255, 255, 255, 0.8); }
 
-    .meal-emoji {
-      font-size: 16px;
-    }
+    .meal-emoji { font-size: 16px; }
+    .meal-nickname { font-weight: 500; }
 
-    .meal-nickname {
-      font-weight: 500;
-    }
-
-    /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -325,9 +293,7 @@
       transition: transform 0.3s;
     }
 
-    .modal-overlay.active .modal {
-      transform: translateY(0);
-    }
+    .modal-overlay.active .modal { transform: translateY(0); }
 
     .modal-header {
       display: flex;
@@ -358,9 +324,7 @@
       color: var(--ink);
     }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
+    .form-group { margin-bottom: 20px; }
 
     .form-label {
       display: block;
@@ -445,30 +409,30 @@
       cursor: not-allowed;
     }
 
-    /* Empty state */
-    .empty-state {
+    .sync-indicator {
       text-align: center;
-      padding: 64px 24px;
+      padding: 8px;
+      font-size: 12px;
       color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .empty-state-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-      opacity: 0.5;
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
     }
 
-    .empty-state-text {
-      font-family: var(--font-display);
-      font-size: 20px;
-      margin-bottom: 8px;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
 
-    .empty-state-hint {
-      font-size: 14px;
-    }
-
-    /* Loading state */
     .loading {
       text-align: center;
       padding: 32px;
@@ -489,7 +453,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Accessibility */
     *:focus-visible {
       outline: 3px solid var(--primary);
       outline-offset: 2px;
@@ -520,17 +483,21 @@
 
     <nav class="month-nav">
       <button class="month-nav-btn" id="prevMonth">‹ 上月</button>
-      <div class="month-label" id="monthLabel">2026年10月</div>
+      <div class="month-label" id="monthLabel">2026 年 10 月</div>
       <button class="month-nav-btn" id="nextMonth">下月 ›</button>
       <button class="month-nav-btn" id="todayBtn">今天</button>
     </nav>
+
+    <div class="sync-indicator" id="syncIndicator">
+      <span class="sync-dot"></span>
+      <span>实时同步中</span>
+    </div>
 
     <main>
       <div class="calendar-grid" id="calendarGrid"></div>
     </main>
   </div>
 
-  <!-- Meal edit modal -->
   <div class="modal-overlay" id="mealModal">
     <div class="modal">
       <div class="modal-header">
@@ -540,14 +507,7 @@
       <form id="mealForm">
         <div class="form-group">
           <label class="form-label" for="dishInput">🍽️ 吃什么</label>
-          <input
-            type="text"
-            id="dishInput"
-            class="form-input"
-            placeholder="今天吃番茄牛腩..."
-            required
-            autocomplete="off"
-          >
+          <input type="text" id="dishInput" class="form-input" placeholder="今天吃番茄牛..." required autocomplete="off">
         </div>
         <div class="form-group">
           <label class="form-label">😊 心情</label>
@@ -558,7 +518,6 @@
     </div>
   </div>
 
-  <!-- Nickname modal -->
   <div class="modal-overlay" id="nicknameModal">
     <div class="modal">
       <div class="modal-header">
@@ -568,15 +527,7 @@
       <form id="nicknameForm">
         <div class="form-group">
           <label class="form-label" for="nicknameInput">👤 输入昵称</label>
-          <input
-            type="text"
-            id="nicknameInput"
-            class="form-input"
-            placeholder="小明"
-            required
-            autocomplete="off"
-            maxlength="20"
-          >
+          <input type="text" id="nicknameInput" class="form-input" placeholder="小明" required autocomplete="off" maxlength="20">
         </div>
         <button type="submit" class="submit-btn">确定</button>
       </form>
@@ -584,23 +535,23 @@
   </div>
 
   <script>
-    // Configuration
-    const EMOJIS = ['😋', '🤤', '😍', '🥰', '😢', '🤔', '🍜', '🍕', '🍣', '🍰', '🥗', '🍔', '🌮', '🍱', '🍲', '🥟', '🍛', '🍝'];
-    const STORAGE_KEY = 'food-calendar-data';
+    // Supabase configuration
+    const SUPABASE_URL = 'https://jqpnfdzndxlvormpmkaz.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_j_0CV7hQadmqnc24pr94Zw_wqA3MGrf';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const EMOJIS = ['😋', '', '😍', '🥰', '😢', '🤔', '🍜', '🍕', '🍣', '🍰', '🥗', '🍔', '🌮', '🍱', '🍲', '🥟', '', '🍝'];
     const NICKNAME_KEY = 'food-calendar-nickname';
     const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
-    const MONTHS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+    const MONTHS = ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月', '7 月', '8 月', '9 月', '10 月', '11 月', '12 月'];
 
-    // State
-    let currentDate = new Date();
-    let currentMonth = currentDate.getMonth();
-    let currentYear = currentDate.getFullYear();
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
     let meals = {};
     let nickname = localStorage.getItem(NICKNAME_KEY) || '';
     let selectedDate = null;
     let selectedEmoji = '';
 
-    // DOM elements
     const calendarGrid = document.getElementById('calendarGrid');
     const monthLabel = document.getElementById('monthLabel');
     const nicknameBtn = document.getElementById('nicknameBtn');
@@ -611,7 +562,6 @@
     const modalClose = document.getElementById('modalClose');
     const dishInput = document.getElementById('dishInput');
     const emojiGrid = document.getElementById('emojiGrid');
-    const submitBtn = document.getElementById('submitBtn');
     const nicknameModal = document.getElementById('nicknameModal');
     const nicknameForm = document.getElementById('nicknameForm');
     const nicknameInput = document.getElementById('nicknameInput');
@@ -619,8 +569,62 @@
     const prevMonthBtn = document.getElementById('prevMonth');
     const nextMonthBtn = document.getElementById('nextMonth');
     const todayBtn = document.getElementById('todayBtn');
+    const syncIndicator = document.getElementById('syncIndicator');
 
-    // Calendar rendering
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    async function loadData() {
+      try {
+        const { data, error } = await supabase.from('meals').select('*');
+        if (error) throw error;
+        meals = {};
+        data.forEach(row => {
+          meals[row.date] = {
+            dish: row.dish,
+            emoji: row.emoji,
+            nickname: row.nickname,
+            updatedAt: new Date(row.updated_at).getTime()
+          };
+        });
+        renderCalendar();
+      } catch (e) {
+        console.error('Failed to load meals:', e);
+      }
+    }
+
+    async function saveMeal(dateStr, mealData) {
+      try {
+        const { error } = await supabase.from('meals').upsert({
+          date: dateStr,
+          dish: mealData.dish,
+          emoji: mealData.emoji,
+          nickname: mealData.nickname,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'date' });
+        if (error) throw error;
+        renderCalendar();
+      } catch (e) {
+        console.error('Failed to save meal:', e);
+        alert('保存失败，请重试');
+      }
+    }
+
+    async function deleteMeal(dateStr) {
+      try {
+        const { error } = await supabase.from('meals').delete().eq('date', dateStr);
+        if (error) throw error;
+        delete meals[dateStr];
+        renderCalendar();
+      } catch (e) {
+        console.error('Failed to delete meal:', e);
+      }
+    }
+
     function renderCalendar() {
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
@@ -628,7 +632,6 @@
 
       calendarGrid.innerHTML = '';
 
-      // Weekday labels
       WEEKDAYS.forEach(day => {
         const label = document.createElement('div');
         label.className = 'weekday-label';
@@ -636,7 +639,6 @@
         calendarGrid.appendChild(label);
       });
 
-      // Empty cells before first day
       for (let i = 0; i < adjustedFirstDay; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'day-cell';
@@ -644,7 +646,6 @@
         calendarGrid.appendChild(emptyCell);
       }
 
-      // Day cells
       for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(currentYear, currentMonth, day);
         const dateStr = formatDate(date);
@@ -700,93 +701,6 @@
       monthLabel.textContent = `${currentYear}年${MONTHS[currentMonth]}`;
     }
 
-    function formatDate(date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    // Data layer — try shared db (Artifact db capability) first, fallback to localStorage
-    const sharedDb = (() => {
-      try {
-        const claude = window.claude;
-        if (!claude) return null;
-        if (typeof claude.use === 'function') {
-          const db = claude.use('db');
-          if (db) return db;
-        }
-        if (claude.db) return claude.db;
-        return null;
-      } catch (e) {
-        return null;
-      }
-    })();
-    const useSharedDb = !!sharedDb;
-
-    async function loadData() {
-      if (useSharedDb) {
-        try {
-          const list = await sharedDb.list('meals');
-          meals = {};
-          list.forEach(doc => {
-            meals[doc.id] = doc.data || doc;
-          });
-          renderCalendar();
-          return;
-        } catch (e) {
-          console.warn('Failed to load from shared db:', e);
-        }
-      }
-      // Fallback to localStorage
-      try {
-        const data = localStorage.getItem(STORAGE_KEY);
-        meals = data ? JSON.parse(data) : {};
-      } catch (e) {
-        meals = {};
-      }
-      renderCalendar();
-    }
-
-    async function saveMeal(dateStr, mealData) {
-      meals[dateStr] = mealData;
-
-      if (useSharedDb) {
-        try {
-          await sharedDb.set('meals', dateStr, mealData);
-        } catch (e) {
-          console.warn('Failed to save to shared db:', e);
-        }
-      }
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(meals));
-      } catch (e) {
-        console.error('Failed to save to localStorage:', e);
-      }
-
-      renderCalendar();
-    }
-
-    async function deleteMeal(dateStr) {
-      delete meals[dateStr];
-
-      if (useSharedDb) {
-        try {
-          await sharedDb.delete('meals', dateStr);
-        } catch (e) {
-          console.warn('Failed to delete from shared db:', e);
-        }
-      }
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(meals));
-      } catch (e) {
-        console.error('Failed to save to localStorage:', e);
-      }
-
-      renderCalendar();
-    }
-
-    // Modal handling
     function openMealModal(dateStr) {
       selectedDate = dateStr;
       const meal = meals[dateStr] || {};
@@ -841,7 +755,14 @@
       nicknameDisplay.textContent = nickname || '设置昵称';
     }
 
-    // Event listeners
+    // Real-time subscription
+    supabase.channel('meals-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'meals' }, (payload) => {
+        console.log('Real-time update:', payload);
+        loadData();
+      })
+      .subscribe();
+
     mealForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const dish = dishInput.value.trim();
@@ -883,19 +804,13 @@
 
     prevMonthBtn.addEventListener('click', () => {
       currentMonth--;
-      if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
-      }
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
       renderCalendar();
     });
 
     nextMonthBtn.addEventListener('click', () => {
       currentMonth++;
-      if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
-      }
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
       renderCalendar();
     });
 
@@ -906,34 +821,19 @@
       renderCalendar();
     });
 
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (mealModal.classList.contains('active')) {
-          closeMealModal();
-        } else if (nicknameModal.classList.contains('active')) {
-          closeNicknameModal();
-        }
+        if (mealModal.classList.contains('active')) closeMealModal();
+        else if (nicknameModal.classList.contains('active')) closeNicknameModal();
       }
     });
 
-    // Initialize
     async function init() {
       updateNicknameDisplay();
       await loadData();
 
-      // Show sync mode indicator
-      if (useSharedDb) {
-        console.log('🍜 多人协作模式已开启：数据存储在共享数据库');
-      } else {
-        console.log('📝 单机模式：数据存储在本机 localStorage（分享给他人时各自独立）');
-      }
-
-      // Prompt for nickname on first visit
       if (!nickname) {
-        setTimeout(() => {
-          openNicknameModal();
-        }, 500);
+        setTimeout(() => openNicknameModal(), 500);
       }
     }
 
