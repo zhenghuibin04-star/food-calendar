@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>干饭日历</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Token system */
+    :root {
+      /* Color tokens - warm honey theme */
+      --bg: #FFF6E3;
+      --surface: #FFFBEF;
+      --primary: #FFB93D;
+      --primary-deep: #F5A623;
+      --ink: #6B4A2B;
+      --muted: #A9855B;
+      --accent: #E8593C;
+      --border: #F2DFB6;
+      --shadow: rgba(107, 74, 43, 0.08);
+
+      /* Font tokens */
+      --font-display: 'ZCOOL KuaiLe', system-ui, sans-serif;
+      --font-body: 'Noto Sans SC', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+      /* Spacing */
+      --side-padding: clamp(16px, 4vw, 32px);
+
+      color-scheme: light;
+    }
+
+    /* Dark theme - system preference */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #2A2118;
+        --surface: #37291B;
+        --primary: #FFD06B;
+        --primary-deep: #FFB93D;
+        --ink: #F4E3C4;
+        --muted: #C4A87A;
+        --accent: #FF7A5C;
+        --border: #4A3926;
+        --shadow: rgba(0, 0, 0, 0.3);
+        color-scheme: dark;
+      }
+    }
+
+    /* Dark theme - explicit toggle */
+    :root[data-theme="dark"] {
+      --bg: #2A2118;
+      --surface: #37291B;
+      --primary: #FFD06B;
+      --primary-deep: #FFB93D;
+      --ink: #F4E3C4;
+      --muted: #C4A87A;
+      --accent: #FF7A5C;
+      --border: #4A3926;
+      --shadow: rgba(0, 0, 0, 0.3);
+      color-scheme: dark;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.5;
+      padding-inline: var(--side-padding);
+      padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-block: 24px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5vw, 40px);
+      color: var(--primary);
+      text-shadow: 2px 2px 4px var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title-emoji {
+      font-size: 1.2em;
+      animation: wiggle 2s ease-in-out infinite;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+
+    .nickname-btn {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nickname-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary-deep);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .nickname-icon {
+      font-size: 18px;
+    }
+
+    /* Month navigation */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .month-nav-btn {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .month-nav-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary-deep);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .month-label {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 4vw, 28px);
+      color: var(--ink);
+      min-width: 160px;
+      text-align: center;
+    }
+
+    /* Calendar grid */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .calendar-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .calendar-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .weekday-label {
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 14px;
+      color: var(--muted);
+      padding: 8px 0;
+      font-weight: 500;
+    }
+
+    .day-cell {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      min-height: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .day-cell:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px var(--shadow);
+      border-color: var(--primary);
+    }
+
+    .day-cell.today {
+      background: var(--primary);
+      border-color: var(--primary-deep);
+      color: var(--bg);
+    }
+
+    .day-cell.has-meal {
+      border-color: var(--accent);
+    }
+
+    .day-number {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .today .day-number {
+      color: var(--bg);
+    }
+
+    .meal-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+      overflow: hidden;
+    }
+
+    .meal-dish {
+      font-weight: 500;
+      color: var(--ink);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+
+    .today .meal-dish {
+      color: var(--bg);
+    }
+
+    .meal-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .today .meal-meta {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .meal-emoji {
+      font-size: 16px;
+    }
+
+    .meal-nickname {
+      font-weight: 500;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s;
+    }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      color: var(--primary);
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 28px;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--border);
+      color: var(--ink);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 16px;
+      color: var(--ink);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--ink);
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 185, 61, 0.2);
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+      gap: 8px;
+    }
+
+    .emoji-btn {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .emoji-btn:hover {
+      transform: scale(1.1);
+      border-color: var(--primary);
+    }
+
+    .emoji-btn.selected {
+      background: var(--primary);
+      border-color: var(--primary-deep);
+      transform: scale(1.05);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--primary);
+      border: none;
+      border-radius: 16px;
+      padding: 16px;
+      font-family: var(--font-display);
+      font-size: 18px;
+      color: var(--bg);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 700;
+    }
+
+    .submit-btn:hover {
+      background: var(--primary-deep);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--shadow);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-family: var(--font-display);
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state-hint {
+      font-size: 14px;
+    }
+
+    /* Loading state */
+    .loading {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Accessibility */
+    *:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">
+        <span class="title-emoji">🍜</span>
+        <span>干饭日历</span>
+        <span class="title-emoji">😋</span>
+      </h1>
+      <button class="nickname-btn" id="nicknameBtn">
+        <span class="nickname-icon">👤</span>
+        <span id="nicknameDisplay">设置昵称</span>
+      </button>
+    </header>
+
+    <nav class="month-nav">
+      <button class="month-nav-btn" id="prevMonth">‹ 上月</button>
+      <div class="month-label" id="monthLabel">2026年10月</div>
+      <button class="month-nav-btn" id="nextMonth">下月 ›</button>
+      <button class="month-nav-btn" id="todayBtn">今天</button>
+    </nav>
+
+    <main>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </main>
+  </div>
+
+  <!-- Meal edit modal -->
+  <div class="modal-overlay" id="mealModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">今天吃什么？</h2>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+      <form id="mealForm">
+        <div class="form-group">
+          <label class="form-label" for="dishInput">🍽️ 吃什么</label>
+          <input
+            type="text"
+            id="dishInput"
+            class="form-input"
+            placeholder="今天吃番茄牛腩..."
+            required
+            autocomplete="off"
+          >
+        </div>
+        <div class="form-group">
+          <label class="form-label">😊 心情</label>
+          <div class="emoji-grid" id="emojiGrid"></div>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">保存</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Nickname modal -->
+  <div class="modal-overlay" id="nicknameModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">你的昵称</h2>
+        <button class="modal-close" id="nicknameModalClose">×</button>
+      </div>
+      <form id="nicknameForm">
+        <div class="form-group">
+          <label class="form-label" for="nicknameInput">👤 输入昵称</label>
+          <input
+            type="text"
+            id="nicknameInput"
+            class="form-input"
+            placeholder="小明"
+            required
+            autocomplete="off"
+            maxlength="20"
+          >
+        </div>
+        <button type="submit" class="submit-btn">确定</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const EMOJIS = ['😋', '🤤', '😍', '🥰', '😢', '🤔', '🍜', '🍕', '🍣', '🍰', '🥗', '🍔', '🌮', '🍱', '🍲', '🥟', '🍛', '🍝'];
+    const STORAGE_KEY = 'food-calendar-data';
+    const NICKNAME_KEY = 'food-calendar-nickname';
+    const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
+    const MONTHS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+    // State
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+    let meals = {};
+    let nickname = localStorage.getItem(NICKNAME_KEY) || '';
+    let selectedDate = null;
+    let selectedEmoji = '';
+
+    // DOM elements
+    const calendarGrid = document.getElementById('calendarGrid');
+    const monthLabel = document.getElementById('monthLabel');
+    const nicknameBtn = document.getElementById('nicknameBtn');
+    const nicknameDisplay = document.getElementById('nicknameDisplay');
+    const mealModal = document.getElementById('mealModal');
+    const mealForm = document.getElementById('mealForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalClose = document.getElementById('modalClose');
+    const dishInput = document.getElementById('dishInput');
+    const emojiGrid = document.getElementById('emojiGrid');
+    const submitBtn = document.getElementById('submitBtn');
+    const nicknameModal = document.getElementById('nicknameModal');
+    const nicknameForm = document.getElementById('nicknameForm');
+    const nicknameInput = document.getElementById('nicknameInput');
+    const nicknameModalClose = document.getElementById('nicknameModalClose');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+    const todayBtn = document.getElementById('todayBtn');
+
+    // Calendar rendering
+    function renderCalendar() {
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
+      const adjustedFirstDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+      calendarGrid.innerHTML = '';
+
+      // Weekday labels
+      WEEKDAYS.forEach(day => {
+        const label = document.createElement('div');
+        label.className = 'weekday-label';
+        label.textContent = day;
+        calendarGrid.appendChild(label);
+      });
+
+      // Empty cells before first day
+      for (let i = 0; i < adjustedFirstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'day-cell';
+        emptyCell.style.visibility = 'hidden';
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      // Day cells
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentYear, currentMonth, day);
+        const dateStr = formatDate(date);
+        const today = new Date();
+        const isToday = date.toDateString() === today.toDateString();
+        const meal = meals[dateStr];
+
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        if (isToday) cell.classList.add('today');
+        if (meal) cell.classList.add('has-meal');
+        cell.dataset.date = dateStr;
+
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = day;
+        cell.appendChild(dayNumber);
+
+        if (meal) {
+          const mealInfo = document.createElement('div');
+          mealInfo.className = 'meal-info';
+
+          const mealDish = document.createElement('div');
+          mealDish.className = 'meal-dish';
+          mealDish.textContent = meal.dish;
+          mealInfo.appendChild(mealDish);
+
+          const mealMeta = document.createElement('div');
+          mealMeta.className = 'meal-meta';
+
+          if (meal.emoji) {
+            const mealEmoji = document.createElement('span');
+            mealEmoji.className = 'meal-emoji';
+            mealEmoji.textContent = meal.emoji;
+            mealMeta.appendChild(mealEmoji);
+          }
+
+          if (meal.nickname) {
+            const mealNickname = document.createElement('span');
+            mealNickname.className = 'meal-nickname';
+            mealNickname.textContent = meal.nickname;
+            mealMeta.appendChild(mealNickname);
+          }
+
+          mealInfo.appendChild(mealMeta);
+          cell.appendChild(mealInfo);
+        }
+
+        cell.addEventListener('click', () => openMealModal(dateStr));
+        calendarGrid.appendChild(cell);
+      }
+
+      monthLabel.textContent = `${currentYear}年${MONTHS[currentMonth]}`;
+    }
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Data layer — try shared db (Artifact db capability) first, fallback to localStorage
+    const sharedDb = (() => {
+      try {
+        const claude = window.claude;
+        if (!claude) return null;
+        if (typeof claude.use === 'function') {
+          const db = claude.use('db');
+          if (db) return db;
+        }
+        if (claude.db) return claude.db;
+        return null;
+      } catch (e) {
+        return null;
+      }
+    })();
+    const useSharedDb = !!sharedDb;
+
+    async function loadData() {
+      if (useSharedDb) {
+        try {
+          const list = await sharedDb.list('meals');
+          meals = {};
+          list.forEach(doc => {
+            meals[doc.id] = doc.data || doc;
+          });
+          renderCalendar();
+          return;
+        } catch (e) {
+          console.warn('Failed to load from shared db:', e);
+        }
+      }
+      // Fallback to localStorage
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        meals = data ? JSON.parse(data) : {};
+      } catch (e) {
+        meals = {};
+      }
+      renderCalendar();
+    }
+
+    async function saveMeal(dateStr, mealData) {
+      meals[dateStr] = mealData;
+
+      if (useSharedDb) {
+        try {
+          await sharedDb.set('meals', dateStr, mealData);
+        } catch (e) {
+          console.warn('Failed to save to shared db:', e);
+        }
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(meals));
+      } catch (e) {
+        console.error('Failed to save to localStorage:', e);
+      }
+
+      renderCalendar();
+    }
+
+    async function deleteMeal(dateStr) {
+      delete meals[dateStr];
+
+      if (useSharedDb) {
+        try {
+          await sharedDb.delete('meals', dateStr);
+        } catch (e) {
+          console.warn('Failed to delete from shared db:', e);
+        }
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(meals));
+      } catch (e) {
+        console.error('Failed to save to localStorage:', e);
+      }
+
+      renderCalendar();
+    }
+
+    // Modal handling
+    function openMealModal(dateStr) {
+      selectedDate = dateStr;
+      const meal = meals[dateStr] || {};
+
+      const date = new Date(dateStr);
+      const isToday = date.toDateString() === new Date().toDateString();
+      modalTitle.textContent = isToday ? '今天吃什么？' : `${date.getMonth() + 1}月${date.getDate()}日吃什么？`;
+
+      dishInput.value = meal.dish || '';
+      selectedEmoji = meal.emoji || '';
+
+      renderEmojiGrid();
+      mealModal.classList.add('active');
+      dishInput.focus();
+    }
+
+    function closeMealModal() {
+      mealModal.classList.remove('active');
+      selectedDate = null;
+      selectedEmoji = '';
+      mealForm.reset();
+    }
+
+    function renderEmojiGrid() {
+      emojiGrid.innerHTML = '';
+      EMOJIS.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'emoji-btn';
+        if (emoji === selectedEmoji) btn.classList.add('selected');
+        btn.textContent = emoji;
+        btn.addEventListener('click', () => {
+          selectedEmoji = emoji;
+          renderEmojiGrid();
+        });
+        emojiGrid.appendChild(btn);
+      });
+    }
+
+    function openNicknameModal() {
+      nicknameInput.value = nickname;
+      nicknameModal.classList.add('active');
+      nicknameInput.focus();
+    }
+
+    function closeNicknameModal() {
+      nicknameModal.classList.remove('active');
+      nicknameForm.reset();
+    }
+
+    function updateNicknameDisplay() {
+      nicknameDisplay.textContent = nickname || '设置昵称';
+    }
+
+    // Event listeners
+    mealForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const dish = dishInput.value.trim();
+      if (!dish || !selectedDate) return;
+
+      const mealData = {
+        dish,
+        emoji: selectedEmoji,
+        nickname,
+        updatedAt: Date.now()
+      };
+
+      await saveMeal(selectedDate, mealData);
+      closeMealModal();
+    });
+
+    nicknameForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newNickname = nicknameInput.value.trim();
+      if (!newNickname) return;
+
+      nickname = newNickname;
+      localStorage.setItem(NICKNAME_KEY, nickname);
+      updateNicknameDisplay();
+      closeNicknameModal();
+    });
+
+    modalClose.addEventListener('click', closeMealModal);
+    nicknameModalClose.addEventListener('click', closeNicknameModal);
+    nicknameBtn.addEventListener('click', openNicknameModal);
+
+    mealModal.addEventListener('click', (e) => {
+      if (e.target === mealModal) closeMealModal();
+    });
+
+    nicknameModal.addEventListener('click', (e) => {
+      if (e.target === nicknameModal) closeNicknameModal();
+    });
+
+    prevMonthBtn.addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    });
+
+    todayBtn.addEventListener('click', () => {
+      const today = new Date();
+      currentYear = today.getFullYear();
+      currentMonth = today.getMonth();
+      renderCalendar();
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (mealModal.classList.contains('active')) {
+          closeMealModal();
+        } else if (nicknameModal.classList.contains('active')) {
+          closeNicknameModal();
+        }
+      }
+    });
+
+    // Initialize
+    async function init() {
+      updateNicknameDisplay();
+      await loadData();
+
+      // Show sync mode indicator
+      if (useSharedDb) {
+        console.log('🍜 多人协作模式已开启：数据存储在共享数据库');
+      } else {
+        console.log('📝 单机模式：数据存储在本机 localStorage（分享给他人时各自独立）');
+      }
+
+      // Prompt for nickname on first visit
+      if (!nickname) {
+        setTimeout(() => {
+          openNicknameModal();
+        }, 500);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
