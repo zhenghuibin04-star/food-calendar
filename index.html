@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js"></script>
   <style>
-    /* Token system */
     :root {
       --bg: #FFF6E3;
       --surface: #FFFBEF;
@@ -18,456 +17,238 @@
       --ink: #6B4A2B;
       --muted: #A9855B;
       --accent: #E8593C;
+      --accent-light: #FFD6CC;
       --border: #F2DFB6;
       --shadow: rgba(107, 74, 43, 0.08);
+      --success: #4CAF50;
       --font-display: 'ZCOOL KuaiLe', system-ui, sans-serif;
       --font-body: 'Noto Sans SC', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
       --side-padding: clamp(16px, 4vw, 32px);
       color-scheme: light;
     }
-
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
-        --bg: #2A2118;
-        --surface: #37291B;
-        --primary: #FFD06B;
-        --primary-deep: #FFB93D;
-        --ink: #F4E3C4;
-        --muted: #C4A87A;
-        --accent: #FF7A5C;
-        --border: #4A3926;
-        --shadow: rgba(0, 0, 0, 0.3);
+        --bg: #2A2118; --surface: #37291B; --primary: #FFD06B; --primary-deep: #FFB93D;
+        --ink: #F4E3C4; --muted: #C4A87A; --accent: #FF7A5C; --accent-light: #5C2A1E;
+        --border: #4A3926; --shadow: rgba(0,0,0,0.3); --success: #66BB6A;
         color-scheme: dark;
       }
     }
-
     :root[data-theme="dark"] {
-      --bg: #2A2118;
-      --surface: #37291B;
-      --primary: #FFD06B;
-      --primary-deep: #FFB93D;
-      --ink: #F4E3C4;
-      --muted: #C4A87A;
-      --accent: #FF7A5C;
-      --border: #4A3926;
-      --shadow: rgba(0, 0, 0, 0.3);
+      --bg: #2A2118; --surface: #37291B; --primary: #FFD06B; --primary-deep: #FFB93D;
+      --ink: #F4E3C4; --muted: #C4A87A; --accent: #FF7A5C; --accent-light: #5C2A1E;
+      --border: #4A3926; --shadow: rgba(0,0,0,0.3); --success: #66BB6A;
       color-scheme: dark;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 16px;
-      line-height: 1.5;
+      background: var(--bg); color: var(--ink);
+      font-family: var(--font-body); font-size: 16px; line-height: 1.5;
       padding-inline: var(--side-padding);
       padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
       min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
     }
+    .container { max-width: 1200px; margin: 0 auto; padding-block: 24px; }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding-block: 24px;
-    }
-
+    /* Header */
     .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px; margin-bottom: 24px;
     }
-
     .title {
-      font-family: var(--font-display);
-      font-size: clamp(28px, 5vw, 40px);
-      color: var(--primary);
-      text-shadow: 2px 2px 4px var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      font-family: var(--font-display); font-size: clamp(28px, 5vw, 40px);
+      color: var(--primary); text-shadow: 2px 2px 4px var(--shadow);
+      display: flex; align-items: center; gap: 12px;
     }
-
-    .title-emoji {
-      font-size: 1.2em;
-      animation: wiggle 2s ease-in-out infinite;
-    }
-
-    @keyframes wiggle {
-      0%, 100% { transform: rotate(-5deg); }
-      50% { transform: rotate(5deg); }
-    }
-
+    .title-emoji { font-size: 1.2em; animation: wiggle 2s ease-in-out infinite; }
+    @keyframes wiggle { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
     .nickname-btn {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: 20px;
-      padding: 8px 16px;
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--ink);
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      background: var(--surface); border: 2px solid var(--border); border-radius: 20px;
+      padding: 8px 16px; font-family: var(--font-body); font-size: 14px;
+      color: var(--ink); cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 8px;
     }
+    .nickname-btn:hover { background: var(--primary); border-color: var(--primary-deep); transform: translateY(-2px); }
 
-    .nickname-btn:hover {
-      background: var(--primary);
-      border-color: var(--primary-deep);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px var(--shadow);
-    }
-
-    .nickname-icon { font-size: 18px; }
-
+    /* Month nav */
     .month-nav {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
     }
-
     .month-nav-btn {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 16px;
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--ink);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-weight: 500;
+      background: var(--surface); border: 2px solid var(--border); border-radius: 12px;
+      padding: 8px 16px; font-family: var(--font-body); font-size: 14px;
+      color: var(--ink); cursor: pointer; transition: all 0.2s; font-weight: 500;
     }
+    .month-nav-btn:hover { background: var(--primary); border-color: var(--primary-deep); transform: translateY(-2px); }
+    .month-label { font-family: var(--font-display); font-size: clamp(20px, 4vw, 28px); color: var(--ink); min-width: 160px; text-align: center; }
 
-    .month-nav-btn:hover {
-      background: var(--primary);
-      border-color: var(--primary-deep);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px var(--shadow);
-    }
-
-    .month-label {
-      font-family: var(--font-display);
-      font-size: clamp(20px, 4vw, 28px);
-      color: var(--ink);
-      min-width: 160px;
-      text-align: center;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 12px;
-      margin-bottom: 32px;
-    }
-
-    @media (max-width: 768px) {
-      .calendar-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-
-    @media (max-width: 480px) {
-      .calendar-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-
-    .weekday-label {
-      text-align: center;
-      font-family: var(--font-display);
-      font-size: 14px;
-      color: var(--muted);
-      padding: 8px 0;
-      font-weight: 500;
-    }
-
-    .day-cell {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: 16px;
-      padding: 12px;
-      min-height: 100px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .day-cell:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px var(--shadow);
-      border-color: var(--primary);
-    }
-
-    .day-cell.today {
-      background: var(--primary);
-      border-color: var(--primary-deep);
-      color: var(--bg);
-    }
-
-    .day-cell.has-meal {
-      border-color: var(--accent);
-    }
-
-    .day-number {
-      font-family: var(--font-display);
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .today .day-number { color: var(--bg); }
-
-    .meal-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 13px;
-      overflow: hidden;
-    }
-
-    .meal-dish {
-      font-weight: 500;
-      color: var(--ink);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
-    }
-
-    .today .meal-dish { color: var(--bg); }
-
-    .meal-meta {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .today .meal-meta { color: rgba(255, 255, 255, 0.8); }
-
-    .meal-emoji { font-size: 16px; }
-    .meal-nickname { font-weight: 500; }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal {
-      background: var(--surface);
-      border-radius: 24px 24px 0 0;
-      padding: 24px;
-      width: 100%;
-      max-width: 500px;
-      max-height: 80vh;
-      overflow-y: auto;
-      transform: translateY(100%);
-      transition: transform 0.3s;
-    }
-
-    .modal-overlay.active .modal { transform: translateY(0); }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-    }
-
-    .modal-title {
-      font-family: var(--font-display);
-      font-size: 24px;
-      color: var(--primary);
-    }
-
-    .modal-close {
-      background: transparent;
-      border: none;
-      font-size: 28px;
-      color: var(--muted);
-      cursor: pointer;
-      padding: 4px 12px;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-
-    .modal-close:hover {
-      background: var(--border);
-      color: var(--ink);
-    }
-
-    .form-group { margin-bottom: 20px; }
-
-    .form-label {
-      display: block;
-      font-family: var(--font-display);
-      font-size: 16px;
-      color: var(--ink);
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .form-input {
-      width: 100%;
-      background: var(--bg);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-family: var(--font-body);
-      font-size: 16px;
-      color: var(--ink);
-      transition: all 0.2s;
-    }
-
-    .form-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(255, 185, 61, 0.2);
-    }
-
-    .emoji-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
-      gap: 8px;
-    }
-
-    .emoji-btn {
-      background: var(--bg);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 24px;
-      cursor: pointer;
-      transition: all 0.2s;
-      aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .emoji-btn:hover {
-      transform: scale(1.1);
-      border-color: var(--primary);
-    }
-
-    .emoji-btn.selected {
-      background: var(--primary);
-      border-color: var(--primary-deep);
-      transform: scale(1.05);
-    }
-
-    .submit-btn {
-      width: 100%;
-      background: var(--primary);
-      border: none;
-      border-radius: 16px;
-      padding: 16px;
-      font-family: var(--font-display);
-      font-size: 18px;
-      color: var(--bg);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-weight: 700;
-    }
-
-    .submit-btn:hover {
-      background: var(--primary-deep);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px var(--shadow);
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
+    /* Sync indicator */
     .sync-indicator {
-      text-align: center;
-      padding: 8px;
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      text-align: center; padding: 6px; font-size: 12px; color: var(--muted);
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px;
+    }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* Calendar grid */
+    .calendar-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 32px;
+    }
+    @media (max-width: 768px) { .calendar-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 480px) { .calendar-grid { grid-template-columns: repeat(3, 1fr); } }
+    .weekday-label {
+      text-align: center; font-family: var(--font-display); font-size: 13px;
+      color: var(--muted); padding: 6px 0; font-weight: 500;
     }
 
-    .sync-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s infinite;
+    /* Day cell */
+    .day-cell {
+      background: var(--surface); border: 2px solid var(--border); border-radius: 14px;
+      padding: 10px; min-height: 90px; cursor: pointer;
+      transition: all 0.2s; display: flex; flex-direction: column; gap: 6px;
+      position: relative; overflow: hidden;
+    }
+    .day-cell:hover { transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); border-color: var(--primary); }
+    .day-cell.today { background: var(--primary); border-color: var(--primary-deep); }
+    .day-cell.today .day-number, .day-cell.today .meal-dish, .day-cell.today .meal-creator { color: var(--bg); }
+    .day-cell.today .meal-participants { color: rgba(255,255,255,0.85); }
+    .day-cell.has-meal { border-color: var(--accent); }
+    .day-cell.drag-over { border-color: var(--success); border-width: 3px; background: var(--accent-light); }
+    .day-cell[draggable="true"] { cursor: grab; }
+    .day-cell[draggable="true"]:active { cursor: grabbing; }
+
+    .day-number { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--ink); }
+    .meal-info { flex: 1; display: flex; flex-direction: column; gap: 3px; font-size: 12px; overflow: hidden; }
+    .meal-dish {
+      font-weight: 500; color: var(--ink);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+    }
+    .meal-creator { font-size: 11px; color: var(--muted); }
+    .meal-participants {
+      display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted);
+    }
+    .meal-emoji { font-size: 14px; }
+    .participant-avatars { display: flex; gap: 2px; flex-wrap: wrap; }
+    .avatar {
+      width: 18px; height: 18px; border-radius: 50%; background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--bg); font-weight: 700;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+    /* Modals */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal {
+      background: var(--surface); border-radius: 24px 24px 0 0;
+      padding: 24px; width: 100%; max-width: 500px; max-height: 85vh;
+      overflow-y: auto; transform: translateY(100%); transition: transform 0.3s;
+    }
+    .modal-overlay.active .modal { transform: translateY(0); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-family: var(--font-display); font-size: 22px; color: var(--primary); }
+    .modal-close {
+      background: transparent; border: none; font-size: 28px;
+      color: var(--muted); cursor: pointer; padding: 4px 12px; border-radius: 8px; transition: all 0.2s;
+    }
+    .modal-close:hover { background: var(--border); color: var(--ink); }
+
+    /* Forms */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-family: var(--font-display); font-size: 15px; color: var(--ink); margin-bottom: 8px; font-weight: 500; }
+    .form-input {
+      width: 100%; background: var(--bg); border: 2px solid var(--border); border-radius: 12px;
+      padding: 12px 16px; font-family: var(--font-body); font-size: 16px; color: var(--ink); transition: all 0.2s;
+    }
+    .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,185,61,0.2); }
+    .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+    .emoji-btn {
+      background: var(--bg); border: 2px solid var(--border); border-radius: 10px;
+      padding: 10px; font-size: 22px; cursor: pointer; transition: all 0.2s;
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    }
+    .emoji-btn:hover { transform: scale(1.1); border-color: var(--primary); }
+    .emoji-btn.selected { background: var(--primary); border-color: var(--primary-deep); }
+    .submit-btn {
+      width: 100%; background: var(--primary); border: none; border-radius: 14px;
+      padding: 14px; font-family: var(--font-display); font-size: 17px;
+      color: var(--bg); cursor: pointer; transition: all 0.2s; font-weight: 700;
+    }
+    .submit-btn:hover { background: var(--primary-deep); transform: translateY(-2px); }
+
+    /* Meal detail */
+    .detail-section { margin-bottom: 16px; }
+    .detail-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    .detail-value { font-size: 16px; font-weight: 500; color: var(--ink); }
+    .detail-dish { font-size: 22px; font-family: var(--font-display); color: var(--primary); margin-bottom: 12px; }
+    .participant-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .participant-tag {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+      padding: 4px 12px; font-size: 13px; color: var(--ink);
+    }
+    .participant-tag.is-you { background: var(--primary); color: var(--bg); border-color: var(--primary-deep); }
+    .action-btns { display: flex; gap: 10px; margin-top: 16px; }
+    .btn-join {
+      flex: 1; background: var(--success); color: white; border: none; border-radius: 12px;
+      padding: 12px; font-family: var(--font-display); font-size: 16px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-join:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-leave {
+      flex: 1; background: var(--accent); color: white; border: none; border-radius: 12px;
+      padding: 12px; font-family: var(--font-display); font-size: 16px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-leave:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-delete {
+      flex: 1; background: var(--bg); color: var(--accent); border: 2px solid var(--accent); border-radius: 12px;
+      padding: 12px; font-family: var(--font-display); font-size: 16px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-delete:hover { background: var(--accent); color: white; }
+
+    /* Notification toast */
+    .toast-container {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 2000; display: flex; flex-direction: column; gap: 8px; width: 90%; max-width: 400px;
+    }
+    .toast {
+      background: var(--surface); border: 2px solid var(--accent); border-radius: 16px;
+      padding: 14px 18px; box-shadow: 0 8px 32px var(--shadow);
+      animation: slideDown 0.3s ease-out; cursor: pointer;
+    }
+    @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .toast-title { font-family: var(--font-display); font-size: 15px; color: var(--accent); margin-bottom: 4px; }
+    .toast-body { font-size: 13px; color: var(--ink); }
+    .toast-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .toast-btn {
+      flex: 1; border: none; border-radius: 8px; padding: 8px;
+      font-family: var(--font-display); font-size: 13px; cursor: pointer; transition: all 0.2s;
+    }
+    .toast-btn-approve { background: var(--success); color: white; }
+    .toast-btn-reject { background: var(--bg); color: var(--accent); border: 1px solid var(--accent); }
+    .toast-btn:hover { transform: translateY(-1px); }
+
+    /* Hint text */
+    .hint-text {
+      text-align: center; font-size: 12px; color: var(--muted);
+      padding: 8px 16px; margin-bottom: 12px;
     }
 
-    .loading {
-      text-align: center;
-      padding: 32px;
-      color: var(--muted);
-    }
+    /* Drag ghost */
+    .drag-ghost { opacity: 0.7; }
 
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 16px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    *:focus-visible {
-      outline: 3px solid var(--primary);
-      outline-offset: 2px;
-    }
-
+    *:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
     @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+      * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
+  <div class="toast-container" id="toastContainer"></div>
+
   <div class="container">
     <header class="header">
       <h1 class="title">
@@ -476,7 +257,7 @@
         <span class="title-emoji">😋</span>
       </h1>
       <button class="nickname-btn" id="nicknameBtn">
-        <span class="nickname-icon">👤</span>
+        <span>👤</span>
         <span id="nicknameDisplay">设置昵称</span>
       </button>
     </header>
@@ -488,41 +269,56 @@
       <button class="month-nav-btn" id="todayBtn">今天</button>
     </nav>
 
-    <div class="sync-indicator" id="syncIndicator">
+    <div class="sync-indicator">
       <span class="sync-dot"></span>
-      <span>实时同步中</span>
+      <span>实时同步中 · 拖拽可改期</span>
     </div>
+
+    <div class="hint-text">💡 点格子填写或查看 · 拖拽已有记录可改期 · 别人填的你可以加入一起吃</div>
 
     <main>
       <div class="calendar-grid" id="calendarGrid"></div>
     </main>
   </div>
 
-  <div class="modal-overlay" id="mealModal">
+  <!-- Create meal modal -->
+  <div class="modal-overlay" id="createModal">
     <div class="modal">
       <div class="modal-header">
-        <h2 class="modal-title" id="modalTitle">今天吃什么？</h2>
-        <button class="modal-close" id="modalClose">×</button>
+        <h2 class="modal-title" id="createTitle">今天吃什么？</h2>
+        <button class="modal-close" id="createClose">×</button>
       </div>
-      <form id="mealForm">
+      <form id="createForm">
         <div class="form-group">
           <label class="form-label" for="dishInput">🍽️ 吃什么</label>
-          <input type="text" id="dishInput" class="form-input" placeholder="今天吃番茄牛..." required autocomplete="off">
+          <input type="text" id="dishInput" class="form-input" placeholder="今天吃番茄牛腩..." required autocomplete="off">
         </div>
         <div class="form-group">
           <label class="form-label">😊 心情</label>
           <div class="emoji-grid" id="emojiGrid"></div>
         </div>
-        <button type="submit" class="submit-btn" id="submitBtn">保存</button>
+        <button type="submit" class="submit-btn">创建干饭计划 🍜</button>
       </form>
     </div>
   </div>
 
+  <!-- Meal detail modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="detailTitle">干饭详情</h2>
+        <button class="modal-close" id="detailClose">×</button>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <!-- Nickname modal -->
   <div class="modal-overlay" id="nicknameModal">
     <div class="modal">
       <div class="modal-header">
         <h2 class="modal-title">你的昵称</h2>
-        <button class="modal-close" id="nicknameModalClose">×</button>
+        <button class="modal-close" id="nicknameClose">×</button>
       </div>
       <form id="nicknameForm">
         <div class="form-group">
@@ -535,15 +331,15 @@
   </div>
 
   <script>
-    // Supabase configuration
+    // Supabase client
     const SUPABASE_URL = 'https://jqpnfdzndxlvormpmkaz.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_j_0CV7hQadmqnc24pr94Zw_wqA3MGrf';
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const EMOJIS = ['\u{1F60B}', '\u{1F924}', '\u{1F60D}', '\u{1F970}', '\u{1F622}', '\u{1F914}', '\u{1F35C}', '\u{1F355}', '\u{1F363}', '\u{1F370}', '\u{1F957}', '\u{1F354}', '\u{1F32E}', '\u{1F371}', '\u{1F372}', '\u{1F95F}', '\u{1F35B}', '\u{1F35D}'];
+    const EMOJIS = ['\u{1F60B}','\u{1F924}','\u{1F60D}','\u{1F970}','\u{1F622}','\u{1F914}','\u{1F35C}','\u{1F355}','\u{1F363}','\u{1F370}','\u{1F957}','\u{1F354}','\u{1F32E}','\u{1F371}','\u{1F372}','\u{1F95F}','\u{1F35B}','\u{1F35D}'];
     const NICKNAME_KEY = 'food-calendar-nickname';
-    const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
-    const MONTHS = ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月', '7 月', '8 月', '9 月', '10 月', '11 月', '12 月'];
+    const WEEKDAYS = ['一','二','三','四','五','六','日'];
+    const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
@@ -551,34 +347,48 @@
     let nickname = localStorage.getItem(NICKNAME_KEY) || '';
     let selectedDate = null;
     let selectedEmoji = '';
+    let draggedDate = null;
+    let pendingMoveRequests = [];
 
-    const calendarGrid = document.getElementById('calendarGrid');
-    const monthLabel = document.getElementById('monthLabel');
-    const nicknameBtn = document.getElementById('nicknameBtn');
-    const nicknameDisplay = document.getElementById('nicknameDisplay');
-    const mealModal = document.getElementById('mealModal');
-    const mealForm = document.getElementById('mealForm');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalClose = document.getElementById('modalClose');
-    const dishInput = document.getElementById('dishInput');
-    const emojiGrid = document.getElementById('emojiGrid');
-    const nicknameModal = document.getElementById('nicknameModal');
-    const nicknameForm = document.getElementById('nicknameForm');
-    const nicknameInput = document.getElementById('nicknameInput');
-    const nicknameModalClose = document.getElementById('nicknameModalClose');
-    const prevMonthBtn = document.getElementById('prevMonth');
-    const nextMonthBtn = document.getElementById('nextMonth');
-    const todayBtn = document.getElementById('todayBtn');
-    const syncIndicator = document.getElementById('syncIndicator');
+    // DOM
+    const $ = id => document.getElementById(id);
+    const calendarGrid = $('calendarGrid');
+    const monthLabel = $('monthLabel');
+    const nicknameBtn = $('nicknameBtn');
+    const nicknameDisplay = $('nicknameDisplay');
+    const createModal = $('createModal');
+    const createForm = $('createForm');
+    const createTitle = $('createTitle');
+    const createClose = $('createClose');
+    const dishInput = $('dishInput');
+    const emojiGrid = $('emojiGrid');
+    const detailModal = $('detailModal');
+    const detailTitle = $('detailTitle');
+    const detailContent = $('detailContent');
+    const detailClose = $('detailClose');
+    const nicknameModal = $('nicknameModal');
+    const nicknameForm = $('nicknameForm');
+    const nicknameInput = $('nicknameInput');
+    const nicknameClose = $('nicknameClose');
+    const toastContainer = $('toastContainer');
 
+    // Helpers
     function formatDate(date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+      return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
     }
 
-    async function loadData() {
+    function getInitials(name) {
+      return name ? name.charAt(0) : '?';
+    }
+
+    function parseParticipants(p) {
+      if (!p) return [];
+      if (Array.isArray(p)) return p;
+      try { return JSON.parse(p); } catch { return []; }
+    }
+
+    // Data: load meals
+    async function loadMeals() {
       try {
         const { data, error } = await client.from('meals').select('*');
         if (error) throw error;
@@ -587,63 +397,166 @@
           meals[row.date] = {
             dish: row.dish,
             emoji: row.emoji,
-            nickname: row.nickname,
+            creator: row.creator || row.nickname,
+            participants: parseParticipants(row.participants),
             updatedAt: new Date(row.updated_at).getTime()
           };
         });
-      } catch (e) {
-        console.error('Failed to load meals:', e);
-      }
+      } catch (e) { console.error('loadMeals:', e); }
       renderCalendar();
     }
 
+    // Data: save meal (create)
     async function saveMeal(dateStr, mealData) {
       try {
+        const participants = [nickname].filter(Boolean);
         const { error } = await client.from('meals').upsert({
           date: dateStr,
           dish: mealData.dish,
           emoji: mealData.emoji,
-          nickname: mealData.nickname,
+          creator: nickname,
+          participants: participants,
           updated_at: new Date().toISOString()
         }, { onConflict: 'date' });
         if (error) throw error;
-        renderCalendar();
-      } catch (e) {
-        console.error('Failed to save meal:', e);
-        alert('保存失败，请重试');
-      }
+      } catch (e) { console.error('saveMeal:', e); alert('保存失败'); }
     }
 
+    // Data: join a meal
+    async function joinMeal(dateStr) {
+      const meal = meals[dateStr];
+      if (!meal) return;
+      if (!nickname) { openNicknameModal(); return; }
+      const participants = meal.participants.includes(nickname)
+        ? meal.participants
+        : [...meal.participants, nickname];
+      try {
+        const { error } = await client.from('meals').update({
+          participants: participants,
+          updated_at: new Date().toISOString()
+        }).eq('date', dateStr);
+        if (error) throw error;
+      } catch (e) { console.error('joinMeal:', e); }
+    }
+
+    // Data: leave a meal
+    async function leaveMeal(dateStr) {
+      const meal = meals[dateStr];
+      if (!meal) return;
+      const participants = meal.participants.filter(n => n !== nickname);
+      try {
+        const { error } = await client.from('meals').update({
+          participants: participants,
+          updated_at: new Date().toISOString()
+        }).eq('date', dateStr);
+        if (error) throw error;
+      } catch (e) { console.error('leaveMeal:', e); }
+    }
+
+    // Data: delete meal
     async function deleteMeal(dateStr) {
+      if (!confirm('确定要删除这个干饭计划吗？')) return;
       try {
         const { error } = await client.from('meals').delete().eq('date', dateStr);
         if (error) throw error;
         delete meals[dateStr];
         renderCalendar();
-      } catch (e) {
-        console.error('Failed to delete meal:', e);
-      }
+        closeDetailModal();
+      } catch (e) { console.error('deleteMeal:', e); }
     }
 
+    // Data: load move requests
+    async function loadMoveRequests() {
+      try {
+        const { data, error } = await client.from('move_requests')
+          .select('*')
+          .eq('status', 'pending');
+        if (error) throw error;
+        pendingMoveRequests = data || [];
+        showMoveRequestNotifications();
+      } catch (e) { console.error('loadMoveRequests:', e); }
+    }
+
+    // Data: create move request
+    async function createMoveRequest(fromDate, toDate) {
+      const meal = meals[fromDate];
+      if (!meal) return;
+      if (!nickname) { openNicknameModal(); return; }
+
+      try {
+        const { error } = await client.from('move_requests').insert({
+          meal_date: fromDate,
+          target_date: toDate,
+          dish: meal.dish,
+          emoji: meal.emoji,
+          requester: nickname,
+          creator: meal.creator,
+          status: 'pending'
+        });
+        if (error) throw error;
+        showToast('改期请求已发送', `${nickname} 想把「${meal.dish}」移到 ${toDate}`, null);
+      } catch (e) { console.error('createMoveRequest:', e); alert('改期请求发送失败'); }
+    }
+
+    // Data: approve move request
+    async function approveMoveRequest(requestId) {
+      const req = pendingMoveRequests.find(r => r.id === requestId);
+      if (!req) return;
+
+      try {
+        // Create meal at target date
+        const participants = [...new Set([req.creator, req.requester])];
+        const { error: insertErr } = await client.from('meals').upsert({
+          date: req.target_date,
+          dish: req.dish,
+          emoji: req.emoji,
+          creator: req.creator,
+          participants: participants,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'date' });
+        if (insertErr) throw insertErr;
+
+        // Delete old meal if target is different
+        if (req.meal_date !== req.target_date) {
+          const { error: delErr } = await client.from('meals').delete().eq('date', req.meal_date);
+          if (delErr) throw delErr;
+        }
+
+        // Mark request as approved
+        const { error: updErr } = await client.from('move_requests').update({ status: 'approved' }).eq('id', requestId);
+        if (updErr) throw updErr;
+
+        showToast('已同意改期', `「${req.dish}」已移到 ${req.target_date}`, null);
+      } catch (e) { console.error('approveMoveRequest:', e); alert('操作失败'); }
+    }
+
+    // Data: reject move request
+    async function rejectMoveRequest(requestId) {
+      try {
+        await client.from('move_requests').update({ status: 'rejected' }).eq('id', requestId);
+      } catch (e) { console.error('rejectMoveRequest:', e); }
+    }
+
+    // Calendar rendering
     function renderCalendar() {
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
-      const adjustedFirstDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+      const firstDow = new Date(currentYear, currentMonth, 1).getDay();
+      const adjusted = firstDow === 0 ? 6 : firstDow - 1;
 
       calendarGrid.innerHTML = '';
 
-      WEEKDAYS.forEach(day => {
-        const label = document.createElement('div');
-        label.className = 'weekday-label';
-        label.textContent = day;
-        calendarGrid.appendChild(label);
+      WEEKDAYS.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'weekday-label';
+        el.textContent = d;
+        calendarGrid.appendChild(el);
       });
 
-      for (let i = 0; i < adjustedFirstDay; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'day-cell';
-        emptyCell.style.visibility = 'hidden';
-        calendarGrid.appendChild(emptyCell);
+      for (let i = 0; i < adjusted; i++) {
+        const el = document.createElement('div');
+        el.className = 'day-cell';
+        el.style.visibility = 'hidden';
+        calendarGrid.appendChild(el);
       }
 
       for (let day = 1; day <= daysInMonth; day++) {
@@ -656,72 +569,120 @@
         const cell = document.createElement('div');
         cell.className = 'day-cell';
         if (isToday) cell.classList.add('today');
-        if (meal) cell.classList.add('has-meal');
+        if (meal) {
+          cell.classList.add('has-meal');
+          cell.draggable = true;
+          cell.addEventListener('dragstart', onDragStart);
+          cell.addEventListener('dragend', onDragEnd);
+        }
+        cell.addEventListener('dragover', onDragOver);
+        cell.addEventListener('dragleave', onDragLeave);
+        cell.addEventListener('drop', onDrop);
         cell.dataset.date = dateStr;
 
-        const dayNumber = document.createElement('div');
-        dayNumber.className = 'day-number';
-        dayNumber.textContent = day;
-        cell.appendChild(dayNumber);
+        const num = document.createElement('div');
+        num.className = 'day-number';
+        num.textContent = day;
+        cell.appendChild(num);
 
         if (meal) {
-          const mealInfo = document.createElement('div');
-          mealInfo.className = 'meal-info';
+          const info = document.createElement('div');
+          info.className = 'meal-info';
 
-          const mealDish = document.createElement('div');
-          mealDish.className = 'meal-dish';
-          mealDish.textContent = meal.dish;
-          mealInfo.appendChild(mealDish);
+          const dish = document.createElement('div');
+          dish.className = 'meal-dish';
+          dish.textContent = (meal.emoji ? meal.emoji + ' ' : '') + meal.dish;
+          info.appendChild(dish);
 
-          const mealMeta = document.createElement('div');
-          mealMeta.className = 'meal-meta';
+          const creator = document.createElement('div');
+          creator.className = 'meal-creator';
+          creator.textContent = 'by ' + (meal.creator || '匿名');
+          info.appendChild(creator);
 
-          if (meal.emoji) {
-            const mealEmoji = document.createElement('span');
-            mealEmoji.className = 'meal-emoji';
-            mealEmoji.textContent = meal.emoji;
-            mealMeta.appendChild(mealEmoji);
+          const pCount = meal.participants.length;
+          if (pCount > 0) {
+            const meta = document.createElement('div');
+            meta.className = 'meal-participants';
+            meta.textContent = '👥 ' + pCount + '人';
+            info.appendChild(meta);
           }
 
-          if (meal.nickname) {
-            const mealNickname = document.createElement('span');
-            mealNickname.className = 'meal-nickname';
-            mealNickname.textContent = meal.nickname;
-            mealMeta.appendChild(mealNickname);
-          }
-
-          mealInfo.appendChild(mealMeta);
-          cell.appendChild(mealInfo);
+          cell.appendChild(info);
+          cell.addEventListener('click', (e) => {
+            if (!draggedDate) openDetailModal(dateStr);
+          });
+        } else {
+          cell.addEventListener('click', () => openCreateModal(dateStr));
         }
 
-        cell.addEventListener('click', () => openMealModal(dateStr));
         calendarGrid.appendChild(cell);
       }
 
       monthLabel.textContent = `${currentYear}年${MONTHS[currentMonth]}`;
     }
 
-    function openMealModal(dateStr) {
-      selectedDate = dateStr;
-      const meal = meals[dateStr] || {};
-
-      const date = new Date(dateStr);
-      const isToday = date.toDateString() === new Date().toDateString();
-      modalTitle.textContent = isToday ? '今天吃什么？' : `${date.getMonth() + 1}月${date.getDate()}日吃什么？`;
-
-      dishInput.value = meal.dish || '';
-      selectedEmoji = meal.emoji || '';
-
-      renderEmojiGrid();
-      mealModal.classList.add('active');
-      dishInput.focus();
+    // Drag & Drop
+    function onDragStart(e) {
+      const dateStr = e.currentTarget.dataset.date;
+      draggedDate = dateStr;
+      e.currentTarget.classList.add('drag-ghost');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', dateStr);
     }
 
-    function closeMealModal() {
-      mealModal.classList.remove('active');
-      selectedDate = null;
+    function onDragEnd(e) {
+      e.currentTarget.classList.remove('drag-ghost');
+      draggedDate = null;
+      document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    }
+
+    function onDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const cell = e.currentTarget;
+      const targetDate = cell.dataset.date;
+      if (targetDate && targetDate !== draggedDate && !meals[targetDate]) {
+        cell.classList.add('drag-over');
+      }
+    }
+
+    function onDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function onDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      const targetDate = e.currentTarget.dataset.date;
+      if (!targetDate || !draggedDate || targetDate === draggedDate) return;
+      if (meals[targetDate]) {
+        alert('目标日期已有干饭计划，不能拖到已有记录的日期');
+        return;
+      }
+      // Ask for confirmation
+      const meal = meals[draggedDate];
+      if (confirm(`要把「${meal.dish}」从 ${draggedDate} 移到 ${targetDate} 吗？\n这会给创建人 ${meal.creator} 发送改期请求。`)) {
+        createMoveRequest(draggedDate, targetDate);
+      }
+    }
+
+    // Create meal modal
+    function openCreateModal(dateStr) {
+      selectedDate = dateStr;
+      const date = new Date(dateStr);
+      const isToday = date.toDateString() === new Date().toDateString();
+      createTitle.textContent = isToday ? '今天吃什么？' : `${date.getMonth()+1}月${date.getDate()}日吃什么？`;
+      dishInput.value = '';
       selectedEmoji = '';
-      mealForm.reset();
+      renderEmojiGrid();
+      createModal.classList.add('active');
+      setTimeout(() => dishInput.focus(), 300);
+    }
+
+    function closeCreateModal() {
+      createModal.classList.remove('active');
+      selectedDate = null;
+      createForm.reset();
     }
 
     function renderEmojiGrid() {
@@ -729,112 +690,195 @@
       EMOJIS.forEach(emoji => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'emoji-btn';
-        if (emoji === selectedEmoji) btn.classList.add('selected');
+        btn.className = 'emoji-btn' + (emoji === selectedEmoji ? ' selected' : '');
         btn.textContent = emoji;
-        btn.addEventListener('click', () => {
-          selectedEmoji = emoji;
-          renderEmojiGrid();
-        });
+        btn.addEventListener('click', () => { selectedEmoji = emoji; renderEmojiGrid(); });
         emojiGrid.appendChild(btn);
       });
     }
 
+    // Detail modal
+    function openDetailModal(dateStr) {
+      const meal = meals[dateStr];
+      if (!meal) return;
+      const date = new Date(dateStr);
+      detailTitle.textContent = `${date.getMonth()+1}月${date.getDate()}日的干饭`;
+
+      const isCreator = meal.creator === nickname;
+      const isParticipant = meal.participants.includes(nickname);
+      const isYouCreator = nickname && meal.creator === nickname;
+
+      let html = `
+        <div class="detail-dish">${meal.emoji || '🍽️'} ${meal.dish}</div>
+        <div class="detail-section">
+          <div class="detail-label">创建人</div>
+          <div class="detail-value">${meal.creator || '匿名'}${isYouCreator ? '（你）' : ''}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">参与者（${meal.participants.length}人）</div>
+          <div class="participant-list">
+            ${meal.participants.map(p =>
+              `<span class="participant-tag${p === nickname ? ' is-you' : ''}">${p}${p === nickname ? '（你）' : ''}</span>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="action-btns">
+      `;
+
+      if (nickname && nickname !== meal.creator && !isParticipant) {
+        html += `<button class="btn-join" onclick="handleJoin('${dateStr}')">🙋 我要一起吃</button>`;
+      } else if (isParticipant && nickname !== meal.creator) {
+        html += `<button class="btn-leave" onclick="handleLeave('${dateStr}')">👋 我不吃了</button>`;
+      }
+
+      if (isCreator) {
+        html += `<button class="btn-delete" onclick="handleDelete('${dateStr}')">🗑 删除</button>`;
+      }
+
+      html += `</div>`;
+      detailContent.innerHTML = html;
+      detailModal.classList.add('active');
+    }
+
+    function closeDetailModal() {
+      detailModal.classList.remove('active');
+    }
+
+    window.handleJoin = async (dateStr) => {
+      await joinMeal(dateStr);
+      closeDetailModal();
+    };
+    window.handleLeave = async (dateStr) => {
+      await leaveMeal(dateStr);
+      closeDetailModal();
+    };
+    window.handleDelete = (dateStr) => {
+      deleteMeal(dateStr);
+    };
+
+    // Nickname modal
     function openNicknameModal() {
       nicknameInput.value = nickname;
       nicknameModal.classList.add('active');
-      nicknameInput.focus();
+      setTimeout(() => nicknameInput.focus(), 300);
     }
-
-    function closeNicknameModal() {
-      nicknameModal.classList.remove('active');
-      nicknameForm.reset();
-    }
+    function closeNicknameModal() { nicknameModal.classList.remove('active'); }
 
     function updateNicknameDisplay() {
       nicknameDisplay.textContent = nickname || '设置昵称';
     }
 
-    // Real-time subscription
+    // Toast notifications
+    function showToast(title, body, actions) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `
+        <div class="toast-title">${title}</div>
+        <div class="toast-body">${body}</div>
+        ${actions ? `<div class="toast-actions">${actions}</div>` : ''}
+      `;
+      if (!actions) {
+        setTimeout(() => toast.remove(), 4000);
+      }
+      toastContainer.appendChild(toast);
+    }
+
+    function showMoveRequestNotifications() {
+      // Show toasts for pending requests where current user is the creator
+      pendingMoveRequests.forEach(req => {
+        if (req.creator === nickname && req.status === 'pending') {
+          const toast = document.createElement('div');
+          toast.className = 'toast';
+          toast.innerHTML = `
+            <div class="toast-title">📬 改期请求</div>
+            <div class="toast-body">${req.requester} 想把「${req.dish}」从 ${req.meal_date} 移到 ${req.target_date}，你同意吗？</div>
+            <div class="toast-actions">
+              <button class="toast-btn toast-btn-approve" data-id="${req.id}">✅ 同意</button>
+              <button class="toast-btn toast-btn-reject" data-id="${req.id}">❌ 拒绝</button>
+            </div>
+          `;
+          toast.querySelector('.toast-btn-approve').addEventListener('click', (e) => {
+            e.stopPropagation();
+            approveMoveRequest(req.id);
+            toast.remove();
+            pendingMoveRequests = pendingMoveRequests.filter(r => r.id !== req.id);
+          });
+          toast.querySelector('.toast-btn-reject').addEventListener('click', (e) => {
+            e.stopPropagation();
+            rejectMoveRequest(req.id);
+            toast.remove();
+            pendingMoveRequests = pendingMoveRequests.filter(r => r.id !== req.id);
+          });
+          toastContainer.appendChild(toast);
+        }
+      });
+    }
+
+    // Real-time subscriptions
     client.channel('meals-channel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'meals' }, (payload) => {
-        console.log('Real-time update:', payload);
-        loadData();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'meals' }, () => {
+        loadMeals();
       })
       .subscribe();
 
-    mealForm.addEventListener('submit', async (e) => {
+    client.channel('move-requests-channel')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'move_requests' }, (payload) => {
+        const req = payload.new;
+        if (req.status === 'pending') {
+          pendingMoveRequests.push(req);
+          if (req.creator === nickname) {
+            showMoveRequestNotifications();
+          }
+        }
+      })
+      .subscribe();
+
+    // Event listeners
+    createForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const dish = dishInput.value.trim();
       if (!dish || !selectedDate) return;
-
-      const mealData = {
-        dish,
-        emoji: selectedEmoji,
-        nickname,
-        updatedAt: Date.now()
-      };
-
-      await saveMeal(selectedDate, mealData);
-      closeMealModal();
+      await saveMeal(selectedDate, { dish, emoji: selectedEmoji });
+      closeCreateModal();
     });
 
     nicknameForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const newNickname = nicknameInput.value.trim();
-      if (!newNickname) return;
-
-      nickname = newNickname;
+      const nn = nicknameInput.value.trim();
+      if (!nn) return;
+      nickname = nn;
       localStorage.setItem(NICKNAME_KEY, nickname);
       updateNicknameDisplay();
       closeNicknameModal();
     });
 
-    modalClose.addEventListener('click', closeMealModal);
-    nicknameModalClose.addEventListener('click', closeNicknameModal);
+    createClose.addEventListener('click', closeCreateModal);
+    detailClose.addEventListener('click', closeDetailModal);
+    nicknameClose.addEventListener('click', closeNicknameModal);
     nicknameBtn.addEventListener('click', openNicknameModal);
 
-    mealModal.addEventListener('click', (e) => {
-      if (e.target === mealModal) closeMealModal();
-    });
+    createModal.addEventListener('click', (e) => { if (e.target === createModal) closeCreateModal(); });
+    detailModal.addEventListener('click', (e) => { if (e.target === detailModal) closeDetailModal(); });
+    nicknameModal.addEventListener('click', (e) => { if (e.target === nicknameModal) closeNicknameModal(); });
 
-    nicknameModal.addEventListener('click', (e) => {
-      if (e.target === nicknameModal) closeNicknameModal();
-    });
-
-    prevMonthBtn.addEventListener('click', () => {
-      currentMonth--;
-      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-      renderCalendar();
-    });
-
-    nextMonthBtn.addEventListener('click', () => {
-      currentMonth++;
-      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-      renderCalendar();
-    });
-
-    todayBtn.addEventListener('click', () => {
-      const today = new Date();
-      currentYear = today.getFullYear();
-      currentMonth = today.getMonth();
-      renderCalendar();
-    });
+    $('prevMonth').addEventListener('click', () => { currentMonth--; if (currentMonth<0){currentMonth=11;currentYear--;} renderCalendar(); });
+    $('nextMonth').addEventListener('click', () => { currentMonth++; if (currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); });
+    $('todayBtn').addEventListener('click', () => { const t=new Date(); currentYear=t.getFullYear(); currentMonth=t.getMonth(); renderCalendar(); });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (mealModal.classList.contains('active')) closeMealModal();
-        else if (nicknameModal.classList.contains('active')) closeNicknameModal();
+        if (createModal.classList.contains('active')) closeCreateModal();
+        if (detailModal.classList.contains('active')) closeDetailModal();
+        if (nicknameModal.classList.contains('active')) closeNicknameModal();
       }
     });
 
+    // Init
     async function init() {
       updateNicknameDisplay();
-      await loadData();
-
-      if (!nickname) {
-        setTimeout(() => openNicknameModal(), 500);
-      }
+      await loadMeals();
+      await loadMoveRequests();
+      if (!nickname) { setTimeout(() => openNicknameModal(), 600); }
     }
 
     init();
