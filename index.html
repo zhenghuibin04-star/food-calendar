@@ -419,7 +419,7 @@
           updated_at: new Date().toISOString()
         }, { onConflict: 'date' });
         if (error) throw error;
-      } catch (e) { console.error('saveMeal:', e); alert('保存失败'); }
+      } catch (e) { console.error('saveMeal:', e); alert('保存失败：' + e.message); }
     }
 
     // Data: join a meal
@@ -495,7 +495,7 @@
         });
         if (error) throw error;
         showToast('改期请求已发送', `${nickname} 想把「${meal.dish}」移到 ${toDate}`, null);
-      } catch (e) { console.error('createMoveRequest:', e); alert('改期请求发送失败'); }
+      } catch (e) { console.error('createMoveRequest:', e); alert('发送失败：' + e.message); }
     }
 
     // Data: approve move request
@@ -527,7 +527,7 @@
         if (updErr) throw updErr;
 
         showToast('已同意改期', `「${req.dish}」已移到 ${req.target_date}`, null);
-      } catch (e) { console.error('approveMoveRequest:', e); alert('操作失败'); }
+      } catch (e) { console.error('approveMoveRequest:', e); alert('操作失败：' + e.message); }
     }
 
     // Data: reject move request
