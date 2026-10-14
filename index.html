@@ -222,22 +222,24 @@
     </nav>
     <div class="sync-indicator"><span class="sync-dot"></span><span>实时同步 · 多人协作</span></div>
     <div class="hint-text">💡 点格子查看/加入计划 · 可以创建自己的计划让搭子选择</div>
-    <div class="calendar-and-sidebar">
-      <main style="min-width:0"><div class="calendar-grid" id="calendarGrid"></div></main>
-      <aside class="sidebar">
-        <div class="sidebar-title">📝 留言板</div>
-        <div class="sidebar-date-select">
-          <select id="commentDateSelect"></select>
-        </div>
-        <div class="comment-list" id="sidebarCommentList">
-          <div class="empty-state">选择日期查看留言</div>
-        </div>
-        <div class="comment-form">
-          <input type="text" class="comment-input" id="sidebarCommentInput" placeholder="说点什么..." maxlength="100">
-          <button class="comment-submit" id="sidebarCommentSubmit">发送</button>
-        </div>
-      </aside>
-    </div>
+  </div>
+
+  <!-- Calendar + Sidebar aligned -->
+  <div class="calendar-and-sidebar">
+    <main style="min-width:0"><div class="calendar-grid" id="calendarGrid"></div></main>
+    <aside class="sidebar">
+      <div class="sidebar-title">📝 留言板</div>
+      <div class="sidebar-date-select">
+        <select id="commentDateSelect"></select>
+      </div>
+      <div class="comment-list" id="sidebarCommentList">
+        <div class="empty-state">选择日期查看留言</div>
+      </div>
+      <div class="comment-form">
+        <input type="text" class="comment-input" id="sidebarCommentInput" placeholder="说点什么..." maxlength="100">
+        <button class="comment-submit" id="sidebarCommentSubmit">发送</button>
+      </div>
+    </aside>
   </div>
 
   <!-- Cell modal: shows plans for a date -->
