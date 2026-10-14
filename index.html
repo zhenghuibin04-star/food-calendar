@@ -692,6 +692,9 @@
       const isCreator = plan.creator === nickname;
       const isParticipant = plan.participants.includes(nickname);
 
+      // Find the date for this plan
+      const planDate = Object.keys(plans).find(d => plans[d].some(p => p.id === planId));
+
       let html = `
         <div class="detail-dish">${plan.emoji || ''} ${plan.dish}</div>
         <div class="detail-section">
@@ -714,6 +717,13 @@
         html += `<button class="btn-delete" onclick="handleDelete('${planId}')">🗑 删除</button>`;
       html += '</div>';
 
+      // Add "manage plans" button to add more types for this date
+      if (planDate) {
+        html += `<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">`;
+        html += `<button class="create-type-btn" onclick="handleManagePlans('${planDate}')" style="width:100%">➕ 添加其他类型的计划（晚饭/饮品等）</button>`;
+        html += `</div>`;
+      }
+
       detailContent.innerHTML = html;
       detailModal.classList.add('active');
     }
@@ -721,6 +731,7 @@
     window.handleJoin = async planId => { await joinPlan(planId); openDetailModal(planId); };
     window.handleLeave = async planId => { await leavePlan(planId); openDetailModal(planId); };
     window.handleDelete = async planId => { await deletePlan(planId); closeDetailModal(); loadPlans(); };
+    window.handleManagePlans = dateStr => { closeDetailModal(); openCellModal(dateStr); };
 
     // Sidebar comments
     function updateSidebarDateSelect() {
