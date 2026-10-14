@@ -717,8 +717,8 @@
         html += `<button class="btn-delete" onclick="handleDelete('${planId}')">🗑 删除</button>`;
       html += '</div>';
 
-      // Add "manage plans" button to add more types for this date
-      if (planDate) {
+      // Add "manage plans" button only for creator
+      if (planDate && isCreator) {
         html += `<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">`;
         html += `<button class="create-type-btn" onclick="handleManagePlans('${planDate}')" style="width:100%">➕ 添加其他类型的计划（晚饭/饮品等）</button>`;
         html += `</div>`;
