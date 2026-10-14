@@ -13,7 +13,7 @@
       --bg: #FFF6E3; --surface: #FFFBEF; --primary: #FFB93D; --primary-deep: #F5A623;
       --ink: #6B4A2B; --muted: #A9855B; --accent: #E8593C; --accent-light: #FFD6CC;
       --border: #F2DFB6; --shadow: rgba(107,74,43,0.08); --success: #4CAF50;
-      --slot-bg: rgba(255,185,61,0.12);
+      --slot-bg: rgba(255,185,61,0.12); --plan-bg: rgba(255,185,61,0.15);
       --font-display: 'ZCOOL KuaiLe', system-ui, sans-serif;
       --font-body: 'Noto Sans SC', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
       --side-padding: clamp(12px, 3vw, 24px);
@@ -24,7 +24,7 @@
         --bg:#2A2118;--surface:#37291B;--primary:#FFD06B;--primary-deep:#FFB93D;
         --ink:#F4E3C4;--muted:#C4A87A;--accent:#FF7A5C;--accent-light:#5C2A1E;
         --border:#4A3926;--shadow:rgba(0,0,0,0.3);--success:#66BB6A;
-        --slot-bg:rgba(255,185,61,0.1);
+        --slot-bg:rgba(255,185,61,0.1);--plan-bg:rgba(255,185,61,0.15);
         color-scheme:dark;
       }
     }
@@ -32,7 +32,7 @@
       --bg:#2A2118;--surface:#37291B;--primary:#FFD06B;--primary-deep:#FFB93D;
       --ink:#F4E3C4;--muted:#C4A87A;--accent:#FF7A5C;--accent-light:#5C2A1E;
       --border:#4A3926;--shadow:rgba(0,0,0,0.3);--success:#66BB6A;
-      --slot-bg:rgba(255,185,61,0.1);
+      --slot-bg:rgba(255,185,61,0.1);--plan-bg:rgba(255,185,61,0.15);
       color-scheme:dark;
     }
     *{margin:0;padding:0;box-sizing:border-box}
@@ -77,30 +77,25 @@
     .day-cell{
       background:var(--surface);border:2px solid var(--border);border-radius:12px;
       padding:8px;min-height:100px;cursor:pointer;transition:all 0.2s;
-      display:flex;flex-direction:column;gap:3px;position:relative;
+      display:flex;flex-direction:column;gap:4px;position:relative;
     }
     .day-cell:hover{transform:translateY(-2px);box-shadow:0 4px 16px var(--shadow);border-color:var(--primary)}
     .day-cell.today{background:var(--primary);border-color:var(--primary-deep)}
     .day-cell.today .day-number{color:var(--bg)}
-    .day-cell.today .slot-type{color:rgba(255,255,255,0.7)}
-    .day-cell.today .slot-dish{color:var(--bg)}
-    .day-cell.today .slot-participants{color:rgba(255,255,255,0.8)}
     .day-cell.drag-over{border-color:var(--success);border-width:3px;background:var(--accent-light)}
     .day-number{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--ink);margin-bottom:2px}
 
-    .slot-row{
-      background:var(--slot-bg);border-radius:8px;padding:4px 6px;
+    /* Plan cards in calendar cell */
+    .plan-card{
+      background:var(--plan-bg);border-radius:8px;padding:4px 6px;
       cursor:pointer;transition:all 0.15s;
       display:flex;flex-direction:column;gap:1px;
     }
-    .slot-row:hover{background:var(--primary)}
-    .slot-row:hover .slot-type,.slot-row:hover .slot-dish,.slot-row:hover .slot-participants{color:var(--bg)}
-    .slot-row.dragging{opacity:0.5}
-    .slot-row[draggable="true"]{cursor:grab}
-    .slot-row[draggable="true"]:active{cursor:grabbing}
-    .slot-type{font-size:9px;color:var(--muted);font-weight:500;line-height:1}
-    .slot-dish{font-size:11px;font-weight:500;color:var(--ink);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .slot-participants{font-size:9px;color:var(--muted);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .plan-card:hover{background:var(--primary);transform:scale(1.02)}
+    .plan-card:hover .plan-type,.plan-card:hover .plan-dish,.plan-card:hover .plan-participants{color:var(--bg)}
+    .plan-type{font-size:9px;color:var(--muted);font-weight:500;line-height:1}
+    .plan-dish{font-size:11px;font-weight:500;color:var(--ink);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .plan-participants{font-size:9px;color:var(--muted);line-height:1.1}
 
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s}
     .modal-overlay.active{opacity:1;pointer-events:auto}
@@ -116,7 +111,6 @@
     .form-input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-family:var(--font-body);font-size:15px;color:var(--ink);transition:all 0.2s}
     .form-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,185,61,0.2)}
 
-    /* Slot type selector */
     .type-selector{display:flex;gap:8px}
     .type-btn{
       flex:1;background:var(--bg);border:2px solid var(--border);border-radius:10px;
@@ -125,7 +119,6 @@
     }
     .type-btn:hover{border-color:var(--primary);background:var(--slot-bg)}
     .type-btn.selected{background:var(--primary);border-color:var(--primary-deep);color:var(--bg);font-weight:700}
-    .type-btn.disabled{opacity:0.4;cursor:not-allowed}
 
     .emoji-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:5px}
     .emoji-btn{background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:8px;font-size:20px;cursor:pointer;transition:all 0.2s;aspect-ratio:1;display:flex;align-items:center;justify-content:center}
@@ -134,6 +127,27 @@
     .submit-btn{width:100%;background:var(--primary);border:none;border-radius:12px;padding:12px;font-family:var(--font-display);font-size:16px;color:var(--bg);cursor:pointer;transition:all 0.2s;font-weight:700}
     .submit-btn:hover{background:var(--primary-deep);transform:translateY(-2px)}
 
+    /* Plan list in cell modal */
+    .plan-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+    .plan-list-item{
+      background:var(--plan-bg);border:2px solid var(--border);border-radius:12px;padding:12px;
+      cursor:pointer;transition:all 0.2s;
+    }
+    .plan-list-item:hover{border-color:var(--primary);background:var(--slot-bg)}
+    .plan-list-item.is-joined{border-color:var(--success);background:rgba(76,175,80,0.1)}
+    .plan-list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .plan-list-type{font-size:12px;color:var(--muted);font-weight:500}
+    .plan-list-dish{font-size:16px;font-family:var(--font-display);color:var(--ink);margin-bottom:4px}
+    .plan-list-creator{font-size:11px;color:var(--muted)}
+    .plan-list-count{font-size:12px;color:var(--success);font-weight:500}
+    .create-plan-btn{
+      width:100%;background:var(--bg);border:2px dashed var(--border);border-radius:12px;padding:14px;
+      font-family:var(--font-display);font-size:14px;color:var(--muted);cursor:pointer;transition:all 0.2s;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .create-plan-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--slot-bg)}
+
+    /* Detail modal */
     .detail-dish{font-size:20px;font-family:var(--font-display);color:var(--primary);margin-bottom:10px}
     .detail-section{margin-bottom:12px}
     .detail-label{font-size:12px;color:var(--muted);margin-bottom:3px}
@@ -149,6 +163,20 @@
     .btn-delete{flex:1;background:var(--bg);color:var(--accent);border:2px solid var(--accent);border-radius:10px;padding:10px;font-family:var(--font-display);font-size:14px;cursor:pointer;transition:all 0.2s}
     .btn-delete:hover{background:var(--accent);color:white}
 
+    /* Comments section */
+    .comments-section{border-top:1px solid var(--border);padding-top:12px;margin-top:16px}
+    .comments-title{font-family:var(--font-display);font-size:14px;color:var(--ink);margin-bottom:10px}
+    .comment-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:200px;overflow-y:auto}
+    .comment-item{background:var(--bg);border-radius:10px;padding:10px}
+    .comment-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+    .comment-author{font-size:12px;font-weight:500;color:var(--ink)}
+    .comment-time{font-size:10px;color:var(--muted)}
+    .comment-content{font-size:13px;color:var(--ink);line-height:1.4}
+    .comment-form{display:flex;gap:8px}
+    .comment-input{flex:1;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--font-body);font-size:13px;color:var(--ink)}
+    .comment-input:focus{outline:none;border-color:var(--primary)}
+    .comment-submit{background:var(--primary);border:none;border-radius:8px;padding:8px 14px;font-family:var(--font-display);font-size:13px;color:var(--bg);cursor:pointer}
+
     .buddy-modal-list{display:flex;flex-direction:column;gap:8px}
     .buddy-modal-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:12px;border:1px solid var(--border)}
     .buddy-modal-item.is-you{border-color:var(--primary);background:var(--slot-bg)}
@@ -162,10 +190,8 @@
     @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
     .toast-title{font-family:var(--font-display);font-size:14px;color:var(--accent);margin-bottom:3px}
     .toast-body{font-size:12px;color:var(--ink)}
-    .toast-actions{display:flex;gap:6px;margin-top:8px}
-    .toast-btn{flex:1;border:none;border-radius:7px;padding:7px;font-family:var(--font-display);font-size:12px;cursor:pointer;transition:all 0.2s}
-    .toast-btn-approve{background:var(--success);color:white}
-    .toast-btn-reject{background:var(--bg);color:var(--accent);border:1px solid var(--accent)}
+
+    .empty-state{text-align:center;color:var(--muted);padding:20px;font-size:13px}
 
     *:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
     @media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
@@ -176,12 +202,11 @@
   <div class="container">
     <header class="header">
       <h1 class="title">
-        <span class="title-emoji"></span>
-        <span>干饭搭子</span>
         <span class="title-emoji">😋</span>
+        <span>干饭搭子</span>
+        <span class="title-emoji">️</span>
       </h1>
       <button class="buddy-btn" id="buddyBtn">
-        <span></span>
         <div class="buddy-list" id="buddyList"><span>加载中...</span></div>
       </button>
     </header>
@@ -191,16 +216,27 @@
       <button class="month-nav-btn" id="nextMonth">下月 ›</button>
       <button class="month-nav-btn" id="todayBtn">今天</button>
     </nav>
-    <div class="sync-indicator"><span class="sync-dot"></span><span>实时同步 · 拖拽slot可改期</span></div>
-    <div class="hint-text">💡 点空格子填写 · 拖拽已填的可改期 · 加入别人的搭子</div>
+    <div class="sync-indicator"><span class="sync-dot"></span><span>实时同步 · 多人协作</span></div>
+    <div class="hint-text">💡 点格子查看/加入计划 · 可以创建自己的计划让搭子选择</div>
     <main><div class="calendar-grid" id="calendarGrid"></div></main>
   </div>
 
-  <!-- Create slot modal -->
+  <!-- Cell modal: shows plans for a date -->
+  <div class="modal-overlay" id="cellModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="cellTitle">今天吃什么？</h2>
+        <button class="modal-close" id="cellClose">×</button>
+      </div>
+      <div id="cellContent"></div>
+    </div>
+  </div>
+
+  <!-- Create plan modal -->
   <div class="modal-overlay" id="createModal">
     <div class="modal">
       <div class="modal-header">
-        <h2 class="modal-title" id="createTitle">填什么？</h2>
+        <h2 class="modal-title" id="createTitle">创建计划</h2>
         <button class="modal-close" id="createClose">×</button>
       </div>
       <form id="createForm">
@@ -213,23 +249,23 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="dishInput">吃什么</label>
-          <input type="text" id="dishInput" class="form-input" placeholder="番茄牛腩..." required autocomplete="off">
+          <label class="form-label" for="dishInput">吃什么/喝什么</label>
+          <input type="text" id="dishInput" class="form-input" placeholder="黄焖鸡米饭..." required autocomplete="off">
         </div>
         <div class="form-group">
-          <label class="form-label">😊 心情</label>
+          <label class="form-label">选个心情</label>
           <div class="emoji-grid" id="emojiGrid"></div>
         </div>
-        <button type="submit" class="submit-btn">保存</button>
+        <button type="submit" class="submit-btn">创建计划</button>
       </form>
     </div>
   </div>
 
-  <!-- Detail modal -->
+  <!-- Detail modal: plan details + comments -->
   <div class="modal-overlay" id="detailModal">
     <div class="modal">
       <div class="modal-header">
-        <h2 class="modal-title" id="detailTitle">详情</h2>
+        <h2 class="modal-title" id="detailTitle">计划详情</h2>
         <button class="modal-close" id="detailClose">×</button>
       </div>
       <div id="detailContent"></div>
@@ -256,7 +292,7 @@
       </div>
       <form id="nicknameForm">
         <div class="form-group">
-          <label class="form-label" for="nicknameInput">👤 输入昵称</label>
+          <label class="form-label" for="nicknameInput">输入昵称</label>
           <input type="text" id="nicknameInput" class="form-input" placeholder="小明" required autocomplete="off" maxlength="20">
         </div>
         <button type="submit" class="submit-btn">确定</button>
@@ -271,26 +307,30 @@
 
     const EMOJIS = ['\u{1F60B}','\u{1F924}','\u{1F60D}','\u{1F970}','\u{1F622}','\u{1F914}','\u{1F35C}','\u{1F355}','\u{1F363}','\u{1F370}','\u{1F957}','\u{1F354}','\u{1F32E}','\u{1F371}','\u{1F372}','\u{1F95F}','\u{1F35B}','\u{1F35D}'];
     const SLOT_TYPES = { lunch: '中午吃啥', dinner: '晚上吃啥', drink: '喝点啥' };
-    const SLOT_ICONS = { lunch: '🌞', dinner: '🌙', drink: '' };
+    const SLOT_ICONS = { lunch: '\u{1F31E}', dinner: '\u{1F319}', drink: '\u{1F964}' };
     const NICKNAME_KEY = 'food-calendar-nickname';
     const WEEKDAYS = ['一','二','三','四','五','六','日'];
     const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
-    let meals = {};
+    let plans = {}; // { "2026-10-14": [{id, slot_type, dish, emoji, creator, participants, created_at}, ...] }
+    let comments = {}; // { "2026-10-14": [{id, author, content, created_at}, ...] }
     let nickname = localStorage.getItem(NICKNAME_KEY) || '';
     let selectedDate = null;
     let selectedType = null;
     let selectedEmoji = '';
-    let draggedKey = null;
-    let pendingMoveRequests = [];
+    let currentPlanId = null;
 
     const $ = id => document.getElementById(id);
     const calendarGrid = $('calendarGrid');
     const monthLabel = $('monthLabel');
     const buddyBtn = $('buddyBtn');
     const buddyList = $('buddyList');
+    const cellModal = $('cellModal');
+    const cellTitle = $('cellTitle');
+    const cellContent = $('cellContent');
+    const cellClose = $('cellClose');
     const createModal = $('createModal');
     const createForm = $('createForm');
     const createTitle = $('createTitle');
@@ -319,18 +359,18 @@
       if (Array.isArray(p)) return p;
       try { return JSON.parse(p); } catch { return []; }
     }
-    function makeKey(dateStr, type) { return `${dateStr}-${type}`; }
-    function parseKey(key) {
-      const parts = key.split('-');
-      const type = parts.pop();
-      return { dateStr: parts.join('-'), type };
+    function formatTime(ts) {
+      const d = new Date(ts);
+      return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
     }
 
     function getAllBuddies() {
       const set = new Set();
-      Object.values(meals).forEach(m => {
-        if (m.creator) set.add(m.creator);
-        (m.participants || []).forEach(p => set.add(p));
+      Object.values(plans).forEach(dayPlans => {
+        dayPlans.forEach(p => {
+          if (p.creator) set.add(p.creator);
+          (p.participants || []).forEach(pp => set.add(pp));
+        });
       });
       const arr = Array.from(set);
       if (nickname) {
@@ -352,108 +392,107 @@
       ).join('') + (buddies.length > 3 ? `<span class="buddy-tag">+${buddies.length - 3}</span>` : '');
     }
 
-    async function loadMeals() {
+    async function loadPlans() {
       try {
-        const { data, error } = await client.from('meals').select('*');
+        const { data, error } = await client.from('plans').select('*');
         if (error) throw error;
-        meals = {};
+        plans = {};
         data.forEach(row => {
-          meals[row.date] = {
-            dish: row.dish, emoji: row.emoji,
-            creator: row.creator || row.nickname,
+          if (!plans[row.date]) plans[row.date] = [];
+          plans[row.date].push({
+            id: row.id,
+            slot_type: row.slot_type,
+            dish: row.dish,
+            emoji: row.emoji || '',
+            creator: row.creator,
             participants: parseParticipants(row.participants),
-            updatedAt: new Date(row.updated_at).getTime()
-          };
+            created_at: row.created_at
+          });
         });
-      } catch (e) { console.error('loadMeals:', e); }
+      } catch (e) { console.error('loadPlans:', e); }
       renderCalendar();
       renderBuddyList();
     }
 
-    async function saveSlot(key, mealData) {
+    async function loadComments() {
+      try {
+        const { data, error } = await client.from('comments').select('*');
+        if (error) throw error;
+        comments = {};
+        data.forEach(row => {
+          if (!comments[row.date]) comments[row.date] = [];
+          comments[row.date].push({
+            id: row.id,
+            author: row.author,
+            content: row.content,
+            created_at: row.created_at
+          });
+        });
+        // Sort by time
+        Object.values(comments).forEach(arr => arr.sort((a,b) => new Date(a.created_at) - new Date(b.created_at)));
+      } catch (e) { console.error('loadComments:', e); }
+    }
+
+    async function createPlan(dateStr, slotType, dish, emoji) {
       try {
         const participants = [nickname].filter(Boolean);
-        const { error } = await client.from('meals').upsert({
-          date: key, dish: mealData.dish, emoji: mealData.emoji,
-          creator: nickname, participants: participants,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'date' });
+        const { data, error } = await client.from('plans').insert({
+          date: dateStr, slot_type: slotType, dish, emoji,
+          creator: nickname, participants
+        }).select().single();
         if (error) throw error;
-      } catch (e) { console.error('saveSlot:', e); alert('保存失败：' + (e.message || e)); }
+        showToast('计划已创建', `${dish} - 等搭子加入！`);
+        return data;
+      } catch (e) { console.error('createPlan:', e); alert('创建失败：' + (e.message || e)); }
     }
 
-    async function joinSlot(key) {
-      const meal = meals[key];
-      if (!meal || !nickname) { if (!nickname) openNicknameModal(); return; }
-      const participants = meal.participants.includes(nickname) ? meal.participants : [...meal.participants, nickname];
+    async function joinPlan(planId) {
+      if (!nickname) { openNicknameModal(); return; }
+      const plan = findPlan(planId);
+      if (!plan) return;
+      const participants = plan.participants.includes(nickname) ? plan.participants : [...plan.participants, nickname];
       try {
-        const { error } = await client.from('meals').update({ participants, updated_at: new Date().toISOString() }).eq('date', key);
+        const { error } = await client.from('plans').update({ participants }).eq('id', planId);
         if (error) throw error;
-      } catch (e) { console.error('joinSlot:', e); }
+        showToast('已加入', `一起${SLOT_TYPES[plan.slot_type]}！`);
+      } catch (e) { console.error('joinPlan:', e); }
     }
 
-    async function leaveSlot(key) {
-      const meal = meals[key];
-      if (!meal) return;
-      const participants = meal.participants.filter(n => n !== nickname);
+    async function leavePlan(planId) {
+      const plan = findPlan(planId);
+      if (!plan) return;
+      const participants = plan.participants.filter(n => n !== nickname);
       try {
-        const { error } = await client.from('meals').update({ participants, updated_at: new Date().toISOString() }).eq('date', key);
+        const { error } = await client.from('plans').update({ participants }).eq('id', planId);
         if (error) throw error;
-      } catch (e) { console.error('leaveSlot:', e); }
+      } catch (e) { console.error('leavePlan:', e); }
     }
 
-    async function deleteSlot(key) {
-      if (!confirm('确定删除吗？')) return;
+    async function deletePlan(planId) {
+      if (!confirm('确定删除这个计划吗？')) return;
       try {
-        const { error } = await client.from('meals').delete().eq('date', key);
+        const { error } = await client.from('plans').delete().eq('id', planId);
         if (error) throw error;
-        delete meals[key];
-        renderCalendar(); renderBuddyList(); closeDetailModal();
-      } catch (e) { console.error('deleteSlot:', e); }
+        showToast('已删除', '计划已移除');
+      } catch (e) { console.error('deletePlan:', e); }
     }
 
-    async function loadMoveRequests() {
+    async function addComment(dateStr, content) {
+      if (!nickname || !content.trim()) return;
       try {
-        const { data, error } = await client.from('move_requests').select('*').eq('status', 'pending');
-        if (error) throw error;
-        pendingMoveRequests = data || [];
-        showMoveNotifications();
-      } catch (e) { console.error('loadMoveRequests:', e); }
-    }
-
-    async function createMoveRequest(fromKey, toKey) {
-      const meal = meals[fromKey];
-      if (!meal || !nickname) { if (!nickname) openNicknameModal(); return; }
-      const from = parseKey(fromKey), to = parseKey(toKey);
-      try {
-        const { error } = await client.from('move_requests').insert({
-          meal_date: fromKey, target_date: toKey,
-          dish: meal.dish, emoji: meal.emoji,
-          requester: nickname, creator: meal.creator, status: 'pending'
+        const { error } = await client.from('comments').insert({
+          date: dateStr, author: nickname, content: content.trim()
         });
         if (error) throw error;
-        showToast('改期请求已发送', `${nickname} 想把「${meal.dish}」移到 ${to.dateStr}`, null);
-      } catch (e) { console.error('createMoveRequest:', e); alert('发送失败'); }
+      } catch (e) { console.error('addComment:', e); alert('发送失败'); }
     }
 
-    async function approveMoveRequest(id) {
-      const req = pendingMoveRequests.find(r => r.id === id);
-      if (!req) return;
-      try {
-        const participants = [...new Set([req.creator, req.requester])];
-        await client.from('meals').upsert({
-          date: req.target_date, dish: req.dish, emoji: req.emoji,
-          creator: req.creator, participants, updated_at: new Date().toISOString()
-        }, { onConflict: 'date' });
-        if (req.meal_date !== req.target_date)
-          await client.from('meals').delete().eq('date', req.meal_date);
-        await client.from('move_requests').update({ status: 'approved' }).eq('id', id);
-        showToast('已同意改期', `「${req.dish}」已移到新日期`, null);
-      } catch (e) { console.error('approveMoveRequest:', e); alert('操作失败'); }
-    }
-
-    async function rejectMoveRequest(id) {
-      try { await client.from('move_requests').update({ status: 'rejected' }).eq('id', id); } catch (e) {}
+    function findPlan(planId) {
+      for (const dayPlans of Object.values(plans)) {
+        const plan = dayPlans.find(p => p.id === planId);
+        if (plan) return plan;
+      }
+      return null;
     }
 
     // Calendar
@@ -487,58 +526,89 @@
         num.className = 'day-number'; num.textContent = day;
         cell.appendChild(num);
 
-        // Show filled slots
-        const slotOrder = ['lunch', 'dinner', 'drink'];
-        slotOrder.forEach(type => {
-          const key = makeKey(dateStr, type);
-          const meal = meals[key];
-          if (!meal) return;
+        // Show plans for this date
+        const dayPlans = plans[dateStr] || [];
+        const typeOrder = ['lunch', 'dinner', 'drink'];
+        const shownTypes = new Set();
 
-          const row = document.createElement('div');
-          row.className = 'slot-row';
-          row.draggable = true;
-          row.addEventListener('dragstart', e => { draggedKey = key; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', key); });
-          row.addEventListener('dragend', e => { e.currentTarget.classList.remove('dragging'); draggedKey = null; document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); });
-          row.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
-          row.addEventListener('drop', e => {
-            e.preventDefault();
-            const targetDate = e.currentTarget.closest('.day-cell').dataset.date;
-            if (!targetDate || !draggedKey) return;
-            const targetKey = makeKey(targetDate, type);
-            if (targetKey === draggedKey || meals[targetKey]) return;
-            const meal2 = meals[draggedKey];
-            const from = parseKey(draggedKey), to = parseKey(targetKey);
-            if (confirm(`要把「${meal2.dish}」从 ${from.dateStr} 移到 ${to.dateStr} 吗？`))
-              createMoveRequest(draggedKey, targetKey);
+        dayPlans.sort((a,b) => typeOrder.indexOf(a.slot_type) - typeOrder.indexOf(b.slot_type)).forEach(plan => {
+          if (shownTypes.has(plan.slot_type)) return; // Show one per type in cell
+          shownTypes.add(plan.slot_type);
+
+          const card = document.createElement('div');
+          card.className = 'plan-card';
+          card.innerHTML = `
+            <div class="plan-type">${SLOT_ICONS[plan.slot_type] || ''} ${SLOT_TYPES[plan.slot_type] || plan.slot_type}</div>
+            <div class="plan-dish">${plan.emoji ? plan.emoji + ' ' : ''}${plan.dish}</div>
+            <div class="plan-participants">${plan.creator}${plan.participants.length > 0 ? ` · ${plan.participants.length}人` : ''}</div>
+          `;
+          card.addEventListener('click', e => {
+            e.stopPropagation();
+            openDetailModal(plan.id);
           });
-
-          const label = document.createElement('div');
-          label.className = 'slot-type';
-          label.textContent = (SLOT_ICONS[type] || '') + ' ' + (SLOT_TYPES[type] || type);
-          row.appendChild(label);
-
-          const dish = document.createElement('div');
-          dish.className = 'slot-dish';
-          dish.textContent = (meal.emoji ? meal.emoji + ' ' : '') + meal.dish;
-          row.appendChild(dish);
-
-          if (meal.participants.length > 0) {
-            const p = document.createElement('div');
-            p.className = 'slot-participants';
-            p.textContent = meal.participants.join('、');
-            row.appendChild(p);
-          }
-
-          row.addEventListener('click', e => { e.stopPropagation(); if (!draggedKey) openDetailModal(key); });
-          cell.appendChild(row);
+          cell.appendChild(card);
         });
 
         cell.dataset.date = dateStr;
-        cell.addEventListener('click', () => { if (!draggedKey) openCreateModal(dateStr); });
+        cell.addEventListener('click', () => openCellModal(dateStr));
         calendarGrid.appendChild(cell);
       }
       monthLabel.textContent = `${currentYear}年${MONTHS[currentMonth]}`;
     }
+
+    // Cell modal: shows all plans for a date
+    function openCellModal(dateStr) {
+      selectedDate = dateStr;
+      const date = new Date(dateStr);
+      const isToday = date.toDateString() === new Date().toDateString();
+      cellTitle.textContent = `${isToday ? '今天' : dateStr} 的干饭计划`;
+
+      const dayPlans = plans[dateStr] || [];
+      const typeOrder = ['lunch', 'dinner', 'drink'];
+
+      let html = '<div class="plan-list">';
+      if (dayPlans.length === 0) {
+        html += '<div class="empty-state">还没有计划，快来创建第一个！</div>';
+      } else {
+        dayPlans.sort((a,b) => typeOrder.indexOf(a.slot_type) - typeOrder.indexOf(b.slot_type)).forEach(plan => {
+          const isJoined = plan.participants.includes(nickname);
+          html += `
+            <div class="plan-list-item${isJoined ? ' is-joined' : ''}" data-plan-id="${plan.id}">
+              <div class="plan-list-header">
+                <span class="plan-list-type">${SLOT_ICONS[plan.slot_type] || ''} ${SLOT_TYPES[plan.slot_type]}</span>
+                <span class="plan-list-count">${plan.participants.length}人${isJoined ? ' · 已加入' : ''}</span>
+              </div>
+              <div class="plan-list-dish">${plan.emoji ? plan.emoji + ' ' : ''}${plan.dish}</div>
+              <div class="plan-list-creator">${plan.creator} 创建</div>
+            </div>
+          `;
+        });
+      }
+      html += '</div>';
+      html += `<button class="create-plan-btn" id="createPlanBtn"><span>+</span> 创建新计划</button>`;
+
+      cellContent.innerHTML = html;
+
+      // Event listeners
+      cellContent.querySelectorAll('.plan-list-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const planId = item.dataset.planId;
+          closeCellModal();
+          openDetailModal(planId);
+        });
+      });
+
+      const createBtn = $('createPlanBtn');
+      if (createBtn) {
+        createBtn.addEventListener('click', () => {
+          closeCellModal();
+          openCreateModal(dateStr);
+        });
+      }
+
+      cellModal.classList.add('active');
+    }
+    function closeCellModal() { cellModal.classList.remove('active'); }
 
     // Create modal
     function openCreateModal(dateStr) {
@@ -547,27 +617,16 @@
       selectedEmoji = '';
       const date = new Date(dateStr);
       const isToday = date.toDateString() === new Date().toDateString();
-      createTitle.textContent = `${isToday ? '今天' : dateStr} 填什么？`;
+      createTitle.textContent = `${isToday ? '今天' : dateStr} 创建计划`;
       dishInput.value = '';
 
-      // Update type buttons - disable already filled types
-      const typeBtns = typeSelector.querySelectorAll('.type-btn');
-      typeBtns.forEach(btn => {
-        const type = btn.dataset.type;
-        const key = makeKey(dateStr, type);
-        const filled = !!meals[key];
-        btn.classList.toggle('disabled', filled);
+      typeSelector.querySelectorAll('.type-btn').forEach(btn => {
         btn.classList.remove('selected');
-        if (filled) {
-          btn.title = '已填写';
-        } else {
-          btn.title = '';
-          btn.onclick = () => {
-            typeBtns.forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedType = type;
-          };
-        }
+        btn.onclick = () => {
+          typeSelector.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedType = btn.dataset.type;
+        };
       });
 
       renderEmojiGrid();
@@ -587,50 +646,103 @@
       });
     }
 
-    // Detail modal
-    function openDetailModal(key) {
-      const meal = meals[key];
-      if (!meal) return;
-      const { dateStr, type } = parseKey(key);
-      const typeName = (SLOT_ICONS[type] || '') + ' ' + (SLOT_TYPES[type] || type);
-      detailTitle.textContent = `${dateStr} · ${typeName}`;
+    // Detail modal: plan details + comments
+    function openDetailModal(planId) {
+      const plan = findPlan(planId);
+      if (!plan) return;
+      currentPlanId = planId;
 
-      const isCreator = meal.creator === nickname;
-      const isParticipant = meal.participants.includes(nickname);
+      const typeName = `${SLOT_ICONS[plan.slot_type] || ''} ${SLOT_TYPES[plan.slot_type] || plan.slot_type}`;
+      detailTitle.textContent = typeName;
+
+      const isCreator = plan.creator === nickname;
+      const isParticipant = plan.participants.includes(nickname);
 
       let html = `
-        <div class="detail-dish">${meal.emoji || '🍽️'} ${meal.dish}</div>
+        <div class="detail-dish">${plan.emoji || ''} ${plan.dish}</div>
         <div class="detail-section">
           <div class="detail-label">创建人</div>
-          <div class="detail-value">${meal.creator || '匿名'}${isCreator ? '（你）' : ''}</div>
+          <div class="detail-value">${plan.creator}${isCreator ? '（你）' : ''}</div>
         </div>
         <div class="detail-section">
-          <div class="detail-label">搭子（${meal.participants.length}人）</div>
+          <div class="detail-label">搭子（${plan.participants.length}人）</div>
           <div class="participant-list">
-            ${meal.participants.map(p => `<span class="participant-tag${p === nickname ? ' is-you' : ''}">${p}${p === nickname ? '（你）' : ''}</span>`).join('')}
+            ${plan.participants.length === 0 ? '<span style="color:var(--muted);font-size:12px">还没有人加入</span>' : ''}
+            ${plan.participants.map(p => `<span class="participant-tag${p === nickname ? ' is-you' : ''}">${p}${p === nickname ? '（你）' : ''}</span>`).join('')}
           </div>
         </div>
         <div class="action-btns">`;
-      if (nickname && nickname !== meal.creator && !isParticipant)
-        html += `<button class="btn-join" onclick="handleJoin('${key}')">🙋 加入搭子</button>`;
-      else if (isParticipant && nickname !== meal.creator)
-        html += `<button class="btn-leave" onclick="handleLeave('${key}')">👋 退出</button>`;
+      if (nickname && nickname !== plan.creator && !isParticipant)
+        html += `<button class="btn-join" onclick="handleJoin('${planId}')">🙋 加入</button>`;
+      else if (isParticipant && nickname !== plan.creator)
+        html += `<button class="btn-leave" onclick="handleLeave('${planId}')">👋 退出</button>`;
       if (isCreator)
-        html += `<button class="btn-delete" onclick="handleDelete('${key}')">🗑 删除</button>`;
+        html += `<button class="btn-delete" onclick="handleDelete('${planId}')">🗑 删除</button>`;
       html += '</div>';
+
+      // Comments section
+      const dateStr = selectedDate || Object.keys(plans).find(k => plans[k].some(p => p.id === planId));
+      const dayComments = comments[dateStr] || [];
+      html += `
+        <div class="comments-section">
+          <div class="comments-title">留言板（${dayComments.length}条）</div>
+          <div class="comment-list" id="commentList">`;
+      if (dayComments.length === 0) {
+        html += '<div class="empty-state">还没有留言，说点什么吧～</div>';
+      } else {
+        dayComments.forEach(c => {
+          html += `
+            <div class="comment-item">
+              <div class="comment-header">
+                <span class="comment-author">${c.author}${c.author === nickname ? '（你）' : ''}</span>
+                <span class="comment-time">${formatTime(c.created_at)}</span>
+              </div>
+              <div class="comment-content">${c.content}</div>
+            </div>`;
+        });
+      }
+      html += `</div>
+          <div class="comment-form">
+            <input type="text" class="comment-input" id="commentInput" placeholder="说点什么..." maxlength="100">
+            <button class="comment-submit" id="commentSubmit">发送</button>
+          </div>
+        </div>`;
+
       detailContent.innerHTML = html;
+
+      // Comment events
+      const commentInput = $('commentInput');
+      const commentSubmit = $('commentSubmit');
+      if (commentSubmit) {
+        commentSubmit.addEventListener('click', async () => {
+          const content = commentInput.value.trim();
+          if (!content || !dateStr) return;
+          await addComment(dateStr, content);
+          commentInput.value = '';
+          // Reload comments
+          await loadComments();
+          // Refresh modal
+          openDetailModal(planId);
+        });
+      }
+      if (commentInput) {
+        commentInput.addEventListener('keydown', e => {
+          if (e.key === 'Enter') commentSubmit?.click();
+        });
+      }
+
       detailModal.classList.add('active');
     }
-    function closeDetailModal() { detailModal.classList.remove('active'); }
-    window.handleJoin = async key => { await joinSlot(key); closeDetailModal(); };
-    window.handleLeave = async key => { await leaveSlot(key); closeDetailModal(); };
-    window.handleDelete = key => { deleteSlot(key); };
+    function closeDetailModal() { detailModal.classList.remove('active'); currentPlanId = null; }
+    window.handleJoin = async planId => { await joinPlan(planId); openDetailModal(planId); };
+    window.handleLeave = async planId => { await leavePlan(planId); openDetailModal(planId); };
+    window.handleDelete = async planId => { await deletePlan(planId); closeDetailModal(); loadPlans(); };
 
     // Buddy modal
     function openBuddyModal() {
       const buddies = getAllBuddies();
       if (buddies.length === 0) {
-        buddyModalContent.innerHTML = '<p style="text-align:center;color:var(--muted);padding:20px">还没有搭子，快去创建干饭计划吧！</p>';
+        buddyModalContent.innerHTML = '<p style="text-align:center;color:var(--muted);padding:20px">还没有搭子，快去创建计划吧！</p>';
       } else {
         buddyModalContent.innerHTML = `<div class="buddy-modal-list">${buddies.map(b =>
           `<div class="buddy-modal-item${b === nickname ? ' is-you' : ''}">
@@ -652,44 +764,22 @@
       const toast = document.createElement('div');
       toast.className = 'toast';
       toast.innerHTML = `<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
-      setTimeout(() => toast.remove(), 4000);
+      setTimeout(() => toast.remove(), 3000);
       toastContainer.appendChild(toast);
-    }
-    function showMoveNotifications() {
-      pendingMoveRequests.forEach(req => {
-        if (req.creator === nickname && req.status === 'pending') {
-          const to = parseKey(req.target_date);
-          const toast = document.createElement('div');
-          toast.className = 'toast';
-          toast.innerHTML = `
-            <div class="toast-title">📬 改期请求</div>
-            <div class="toast-body">${req.requester} 想把「${req.dish}」移到 ${to.dateStr}</div>
-            <div class="toast-actions">
-              <button class="toast-btn toast-btn-approve">✅ 同意</button>
-              <button class="toast-btn toast-btn-reject">❌ 拒绝</button>
-            </div>`;
-          toast.querySelector('.toast-btn-approve').addEventListener('click', e => { e.stopPropagation(); approveMoveRequest(req.id); toast.remove(); pendingMoveRequests = pendingMoveRequests.filter(r => r.id !== req.id); });
-          toast.querySelector('.toast-btn-reject').addEventListener('click', e => { e.stopPropagation(); rejectMoveRequest(req.id); toast.remove(); pendingMoveRequests = pendingMoveRequests.filter(r => r.id !== req.id); });
-          toastContainer.appendChild(toast);
-        }
-      });
     }
 
     // Real-time
-    client.channel('mc').on('postgres_changes', { event: '*', schema: 'public', table: 'meals' }, () => loadMeals()).subscribe();
-    client.channel('mrc').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'move_requests' }, p => {
-      const req = p.new;
-      if (req.status === 'pending') { pendingMoveRequests.push(req); if (req.creator === nickname) showMoveNotifications(); }
-    }).subscribe();
+    client.channel('plans').on('postgres_changes', { event: '*', schema: 'public', table: 'plans' }, () => loadPlans()).subscribe();
+    client.channel('comments').on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, () => { loadComments(); }).subscribe();
 
     // Events
     createForm.addEventListener('submit', async e => {
       e.preventDefault();
       const dish = dishInput.value.trim();
-      if (!dish || !selectedDate || !selectedType) { alert('请选择类型（中午吃啥/晚上吃啥/喝点啥）'); return; }
-      const key = makeKey(selectedDate, selectedType);
-      await saveSlot(key, { dish, emoji: selectedEmoji });
+      if (!dish || !selectedDate || !selectedType) { alert('请填写完整'); return; }
+      await createPlan(selectedDate, selectedType, dish, selectedEmoji);
       closeCreateModal();
+      await loadPlans();
     });
 
     nicknameForm.addEventListener('submit', e => {
@@ -702,13 +792,14 @@
       renderBuddyList();
     });
 
+    cellClose.addEventListener('click', closeCellModal);
     createClose.addEventListener('click', closeCreateModal);
     detailClose.addEventListener('click', closeDetailModal);
     buddyModalClose.addEventListener('click', closeBuddyModal);
     nicknameClose.addEventListener('click', closeNicknameModal);
     buddyBtn.addEventListener('click', openBuddyModal);
 
-    [createModal, detailModal, buddyModal, nicknameModal].forEach(m =>
+    [cellModal, createModal, detailModal, buddyModal, nicknameModal].forEach(m =>
       m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); })
     );
 
@@ -718,13 +809,12 @@
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape')
-        [createModal, detailModal, buddyModal, nicknameModal].forEach(m => m.classList.remove('active'));
+        [cellModal, createModal, detailModal, buddyModal, nicknameModal].forEach(m => m.classList.remove('active'));
     });
 
     async function init() {
       renderBuddyList();
-      await loadMeals();
-      await loadMoveRequests();
+      await Promise.all([loadPlans(), loadComments()]);
       if (!nickname) setTimeout(() => openNicknameModal(), 600);
     }
     init();
