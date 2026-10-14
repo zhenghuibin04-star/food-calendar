@@ -42,8 +42,10 @@
       padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px);
       min-height:100vh;
     }
-    .container{max-width:1400px;margin:0 auto;padding-block:20px;display:grid;grid-template-columns:1fr 320px;gap:20px}
-    @media(max-width:900px){.container{grid-template-columns:1fr}}
+    .container{max-width:1400px;margin:0 auto;padding-block:20px}
+    .calendar-and-sidebar{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+    @media(max-width:900px){.calendar-and-sidebar{grid-template-columns:1fr}}
+    .sidebar{background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:16px;height:fit-content;position:sticky;top:20px}
 
     .header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px}
     .title{font-family:var(--font-display);font-size:clamp(24px,5vw,36px);color:var(--primary);text-shadow:2px 2px 4px var(--shadow);display:flex;align-items:center;gap:10px}
@@ -164,8 +166,6 @@
     .btn-delete{flex:1;background:var(--bg);color:var(--accent);border:2px solid var(--accent);border-radius:10px;padding:10px;font-family:var(--font-display);font-size:14px;cursor:pointer;transition:all 0.2s}
     .btn-delete:hover{background:var(--accent);color:white}
 
-    /* Sidebar comments */
-    .sidebar{background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:16px;height:fit-content;position:sticky;top:20px}
     .sidebar-title{font-family:var(--font-display);font-size:18px;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:8px}
     .sidebar-date-select{margin-bottom:12px}
     .sidebar-date-select select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:8px 12px;font-family:var(--font-body);font-size:13px;color:var(--ink)}
@@ -204,42 +204,40 @@
 <body>
   <div class="toast-container" id="toastContainer"></div>
   <div class="container">
-    <div class="main-content">
-      <header class="header">
-        <h1 class="title">
-          <span class="title-emoji">😋</span>
-          <span>干饭搭子</span>
-          <span class="title-emoji">️</span>
-        </h1>
-        <button class="buddy-btn" id="buddyBtn">
-          <div class="buddy-list" id="buddyList"><span>加载中...</span></div>
-        </button>
-      </header>
-      <nav class="month-nav">
-        <button class="month-nav-btn" id="prevMonth">‹ 上月</button>
-        <div class="month-label" id="monthLabel">2026年10月</div>
-        <button class="month-nav-btn" id="nextMonth">下月 ›</button>
-        <button class="month-nav-btn" id="todayBtn">今天</button>
-      </nav>
-      <div class="sync-indicator"><span class="sync-dot"></span><span>实时同步 · 多人协作</span></div>
-      <div class="hint-text">💡 点格子查看/加入计划 · 可以创建自己的计划让搭子选择</div>
-      <main><div class="calendar-grid" id="calendarGrid"></div></main>
+    <header class="header">
+      <h1 class="title">
+        <span class="title-emoji">😋</span>
+        <span>干饭搭子</span>
+        <span class="title-emoji">️</span>
+      </h1>
+      <button class="buddy-btn" id="buddyBtn">
+        <div class="buddy-list" id="buddyList"><span>加载中...</span></div>
+      </button>
+    </header>
+    <nav class="month-nav">
+      <button class="month-nav-btn" id="prevMonth">‹ 上月</button>
+      <div class="month-label" id="monthLabel">2026年10月</div>
+      <button class="month-nav-btn" id="nextMonth">下月 ›</button>
+      <button class="month-nav-btn" id="todayBtn">今天</button>
+    </nav>
+    <div class="sync-indicator"><span class="sync-dot"></span><span>实时同步 · 多人协作</span></div>
+    <div class="hint-text">💡 点格子查看/加入计划 · 可以创建自己的计划让搭子选择</div>
+    <div class="calendar-and-sidebar">
+      <main style="min-width:0"><div class="calendar-grid" id="calendarGrid"></div></main>
+      <aside class="sidebar">
+        <div class="sidebar-title">📝 留言板</div>
+        <div class="sidebar-date-select">
+          <select id="commentDateSelect"></select>
+        </div>
+        <div class="comment-list" id="sidebarCommentList">
+          <div class="empty-state">选择日期查看留言</div>
+        </div>
+        <div class="comment-form">
+          <input type="text" class="comment-input" id="sidebarCommentInput" placeholder="说点什么..." maxlength="100">
+          <button class="comment-submit" id="sidebarCommentSubmit">发送</button>
+        </div>
+      </aside>
     </div>
-
-    <!-- Sidebar comments -->
-    <aside class="sidebar">
-      <div class="sidebar-title">📝 留言板</div>
-      <div class="sidebar-date-select">
-        <select id="commentDateSelect"></select>
-      </div>
-      <div class="comment-list" id="sidebarCommentList">
-        <div class="empty-state">选择日期查看留言</div>
-      </div>
-      <div class="comment-form">
-        <input type="text" class="comment-input" id="sidebarCommentInput" placeholder="说点什么..." maxlength="100">
-        <button class="comment-submit" id="sidebarCommentSubmit">发送</button>
-      </div>
-    </aside>
   </div>
 
   <!-- Cell modal: shows plans for a date -->
@@ -726,15 +724,21 @@
     function updateSidebarDateSelect() {
       const dates = Object.keys(plans).sort();
       const today = formatDate(new Date());
-      if (!sidebarDate && dates.includes(today)) sidebarDate = today;
-      if (!sidebarDate && dates.length > 0) sidebarDate = dates[dates.length - 1];
 
-      commentDateSelect.innerHTML = '<option value="">选择日期</option>' +
-        dates.map(d => {
-          const date = new Date(d);
-          const label = `${date.getMonth()+1}月${date.getDate()}日`;
-          return `<option value="${d}"${d === sidebarDate ? ' selected' : ''}>${label}</option>`;
-        }).join('');
+      // Always include today in the list
+      const allDates = [...new Set([...dates, today])].sort();
+
+      // Auto-select today
+      if (!sidebarDate) sidebarDate = today;
+
+      commentDateSelect.innerHTML = allDates.map(d => {
+        const date = new Date(d);
+        const label = `${date.getMonth()+1}月${date.getDate()}日`;
+        const isToday = d === today ? ' (今天)' : '';
+        return `<option value="${d}"${d === sidebarDate ? ' selected' : ''}>${label}${isToday}</option>`;
+      }).join('');
+
+      renderSidebarComments();
     }
 
     function renderSidebarComments() {
@@ -755,6 +759,8 @@
             <div class="comment-content">${c.content}</div>
           </div>
         `).join('');
+        // Auto-scroll to bottom
+        sidebarCommentList.scrollTop = sidebarCommentList.scrollHeight;
       }
     }
 
