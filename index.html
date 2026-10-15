@@ -167,8 +167,6 @@
     .btn-delete:hover{background:var(--accent);color:white}
 
     .sidebar-title{font-family:var(--font-display);font-size:18px;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-    .sidebar-date-select{margin-bottom:12px}
-    .sidebar-date-select select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:8px 12px;font-family:var(--font-body);font-size:13px;color:var(--ink)}
     .comment-list{display:flex;flex-direction:column;gap:8px;flex:1;overflow-y:auto;margin-bottom:12px}
     .comment-item{background:var(--bg);border-radius:10px;padding:10px}
     .comment-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
@@ -228,12 +226,9 @@
   <div class="calendar-and-sidebar" style="max-width:1400px;margin:0 auto;padding:0 var(--side-padding)">
     <main style="min-width:0"><div class="calendar-grid" id="calendarGrid"></div></main>
     <aside class="sidebar">
-      <div class="sidebar-title">📝 留言板</div>
-      <div class="sidebar-date-select">
-        <select id="commentDateSelect"></select>
-      </div>
+      <div class="sidebar-title"> 留言板</div>
       <div class="comment-list" id="sidebarCommentList">
-        <div class="empty-state">选择日期查看留言</div>
+        <div class="empty-state">还没有留言，说点什么吧～</div>
       </div>
       <div class="comment-form">
         <input type="text" class="comment-input" id="sidebarCommentInput" placeholder="说点什么..." maxlength="100">
@@ -342,7 +337,6 @@
     let selectedType = null;
     let selectedEmoji = '';
     let currentPlanId = null;
-    let sidebarDate = null;
 
     const $ = id => document.getElementById(id);
     const calendarGrid = $('calendarGrid');
@@ -372,7 +366,6 @@
     const nicknameInput = $('nicknameInput');
     const nicknameClose = $('nicknameClose');
     const toastContainer = $('toastContainer');
-    const commentDateSelect = $('commentDateSelect');
     const sidebarCommentList = $('sidebarCommentList');
     const sidebarCommentInput = $('sidebarCommentInput');
     const sidebarCommentSubmit = $('sidebarCommentSubmit');
@@ -438,7 +431,6 @@
       } catch (e) { console.error('loadPlans:', e); }
       renderCalendar();
       renderBuddyList();
-      updateSidebarDateSelect();
     }
 
     async function loadComments() {
@@ -733,62 +725,49 @@
     window.handleDelete = async planId => { await deletePlan(planId); closeDetailModal(); loadPlans(); };
     window.handleManagePlans = dateStr => { closeDetailModal(); openCellModal(dateStr); };
 
-    // Sidebar comments
-    function updateSidebarDateSelect() {
-      const dates = Object.keys(plans).sort();
-      const today = formatDate(new Date());
-
-      // Always include today in the list
-      const allDates = [...new Set([...dates, today])].sort();
-
-      // Auto-select today
-      if (!sidebarDate) sidebarDate = today;
-
-      commentDateSelect.innerHTML = allDates.map(d => {
-        const date = new Date(d);
-        const label = `${date.getMonth()+1}月${date.getDate()}日`;
-        const isToday = d === today ? ' (今天)' : '';
-        return `<option value="${d}"${d === sidebarDate ? ' selected' : ''}>${label}${isToday}</option>`;
-      }).join('');
-
-      renderSidebarComments();
-    }
-
+    // Sidebar comments - show all comments
     function renderSidebarComments() {
-      if (!sidebarDate) {
-        sidebarCommentList.innerHTML = '<div class="empty-state">选择日期查看留言</div>';
-        return;
-      }
-      const dayComments = comments[sidebarDate] || [];
-      if (dayComments.length === 0) {
+      const allComments = [];
+      Object.entries(comments).forEach(([dateStr, dateComments]) => {
+        dateComments.forEach(c => {
+          allComments.push({ ...c, dateStr });
+        });
+      });
+      // Sort by date, then by time
+      allComments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+      if (allComments.length === 0) {
         sidebarCommentList.innerHTML = '<div class="empty-state">还没有留言，说点什么吧～</div>';
       } else {
-        sidebarCommentList.innerHTML = dayComments.map(c => `
-          <div class="comment-item">
-            <div class="comment-header">
-              <span class="comment-author">${c.author}${c.author === nickname ? '（你）' : ''}</span>
-              <span class="comment-time">${formatTime(c.created_at)}</span>
-            </div>
-            <div class="comment-content">${c.content}</div>
-          </div>
-        `).join('');
-        // Auto-scroll to bottom
+        let html = '';
+        let lastDate = '';
+        allComments.forEach(c => {
+          // Add date label when date changes
+          if (c.dateStr !== lastDate) {
+            const date = new Date(c.dateStr);
+            const isToday = c.dateStr === formatDate(new Date());
+            html += `<div style="font-family:var(--font-display);font-size:13px;color:var(--muted);margin-top:8px;margin-bottom:4px">${date.getMonth()+1}月${date.getDate()}日${isToday ? ' (今天)' : ''}</div>`;
+            lastDate = c.dateStr;
+          }
+          html += `
+            <div class="comment-item">
+              <div class="comment-header">
+                <span class="comment-author">${c.author}${c.author === nickname ? '（你）' : ''}</span>
+                <span class="comment-time">${formatTime(c.created_at)}</span>
+              </div>
+              <div class="comment-content">${c.content}</div>
+            </div>`;
+        });
+        sidebarCommentList.innerHTML = html;
         sidebarCommentList.scrollTop = sidebarCommentList.scrollHeight;
       }
     }
 
-    commentDateSelect.addEventListener('change', e => {
-      sidebarDate = e.target.value || null;
-      renderSidebarComments();
-    });
-
     sidebarCommentSubmit.addEventListener('click', async () => {
       const content = sidebarCommentInput.value.trim();
-      if (!content || !sidebarDate) {
-        if (!sidebarDate) alert('请先选择日期');
-        return;
-      }
-      await addComment(sidebarDate, content);
+      if (!content) return;
+      const today = formatDate(new Date());
+      await addComment(today, content);
       sidebarCommentInput.value = '';
       await loadComments();
     });
